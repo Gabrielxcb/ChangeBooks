@@ -70,6 +70,4 @@ Usuários podem visualizar os livros disponíveis, cadastrar seus próprios livr
 - Interface será intuitiva e de fácil navegação, acessível para todos os tipos de usuários.
 - O sistema manterá logs de atividades administrativas, garantindo rastreabilidade de ações como exclusões de conteúdo ou bloqueios de usuários.
 
----
-
 
