@@ -6,7 +6,7 @@ O **Book's Trade** é uma aplicação web cujo objetivo é criar uma comunidade 
 
 Usuários podem visualizar os livros disponíveis, cadastrar seus próprios livros, fazer propostas de troca e aceitar ou recusar propostas recebidas. Além disso, haverá um perfil de **Administrador**, responsável por gerenciar o sistema e moderar os conteúdos.
 
----
+
 
 ## Objetivos do Sistema
 
@@ -16,7 +16,7 @@ Usuários podem visualizar os livros disponíveis, cadastrar seus próprios livr
 - Oferecer ferramentas administrativas para moderação de conteúdo e gerenciamento de usuários.
 - Manter um histórico de trocas realizadas.
 
----
+
 
 ## Funcionalidades Principais
 
@@ -28,7 +28,7 @@ Usuários podem visualizar os livros disponíveis, cadastrar seus próprios livr
 - Histórico de trocas realizadas.
 - Moderação e gerenciamento por parte de administradores.
 
----
+
 
 ## Perfis de Usuário
 
@@ -49,7 +49,7 @@ Usuários podem visualizar os livros disponíveis, cadastrar seus próprios livr
 - **Monitoramento de Atividades:** Acompanhar estatísticas como número de usuários, número de trocas e livros mais trocados.
 - **Acesso ao Histórico Geral:** Visualizar o histórico completo de trocas realizadas na plataforma.
 
----
+
 
 ## Regras de Negócio
 
@@ -61,7 +61,7 @@ Usuários podem visualizar os livros disponíveis, cadastrar seus próprios livr
 - Apenas administradores podem excluir livros de terceiros ou bloquear usuários.
 - Todos os cadastros de livros estão sujeitos a moderação para garantir o cumprimento das regras da plataforma.
 
----
+
 
 ## Requisitos Não Funcionais
 
