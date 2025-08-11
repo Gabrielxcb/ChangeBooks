@@ -13,6 +13,4 @@ public class MainViewController {
     public String getHomePage() {
         return "index.html";
     }
-    
-
 }
