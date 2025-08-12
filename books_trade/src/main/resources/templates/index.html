@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+    xmlns:th="http://www.thymeleaf.org"
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book's Trade</title>
+    <title th:text"#{app.title}>Book's Trade</title>
 </head>
 <body>
-    <h1>Book's Trade</h1>
-
-    <p>O <b>Book's Trade</b> é uma aplicação web cujo objetivo é criar uma comunidade de leitores, permitindo que usuários cadastrem os livros que possuem e proponham trocas com outros usuários. A plataforma visa incentivar o compartilhamento de livros, ampliar o acesso à leitura e promover o reaproveitamento de exemplares.</p>
+    <h1>Book's Trade, funcionou</h1>
+    <p th:text="#{app.welcome(#{app.title})}">Welcome Message App Title</span></p>
+    <p>Você está na página principal</p>
+    <p>ID: <span th:text="${id}>ID Placeholder</span></p>
 </body>
 </html>
