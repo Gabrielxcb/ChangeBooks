@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página da Livro</title>
+    <title>Detalhes do Livro</title>
 </head>
 <body>
-    <h1>Em produção</h1>
+    <h1>Detalhes do Livro</h1>
+    <p>ID: <span th:text="${livroId}"></span></p>
+    <a th:href="@{/trocas/nova}">Propor Troca</a>
 </body>
 </html>
+

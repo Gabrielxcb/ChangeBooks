@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-    xmlns:th="http://www.thymeleaf.org"
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text"#{app.title}">Book's Trade</title>
+    <title>Book's Trade - Início</title>
 </head>
 <body>
-    <h1>Book's Trade, funcionou</h1>
-    <p th:text="#{app.welcome(#{app.title})}">Welcome Message App Title</span></p>
-    <p>Você está na página principal</p>
-    <p>ID: <span th:text="${id}">ID Placeholder</span></p>
+    <h1>Bem-vindo ao Book's Trade!</h1>
+    <nav>
+        <a th:href="@{/auth/login}">Login</a> | 
+        <a th:href="@{/auth/register}">Registrar</a> | 
+        <a th:href="@{/livros}">Catálogo de Livros</a> | 
+        <a th:href="@{/trocas}">Propostas de Troca</a> | 
+        <a th:href="@{/admin}">Administração</a>
+    </nav>
 </body>
 </html>

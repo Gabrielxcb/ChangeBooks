@@ -1,4 +1,4 @@
-package com.edu.iff.ccc.books_trade.controller.view;
+package com.edu.iff.ccc.books_trade.controller.restapi;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
