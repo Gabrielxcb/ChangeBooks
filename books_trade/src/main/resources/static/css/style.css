@@ -1,56 +1,50 @@
-/* src/main/resources/static/css/style.css */
+/* --- ESTILOS GLOBAIS E ESTRUTURA DA PÁGINA --- */
+html {
+    height: 100%;
+}
 
-/* --- Estilos Globais e Reset --- */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    background-color: #f4f4f9;
+    background-color: #f4f4f9; /* Fundo cinza claro visível nas laterais */
     color: #333;
     line-height: 1.6;
+    min-height: 100vh; /* Garante que o body ocupe 100% da altura da tela */
+    display: flex;
+    flex-direction: column;
 }
 
 h1, h2 {
     color: #333;
 }
 
-a {
-    color: #007bff;
-    text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
-}
-
 .container {
     max-width: 1100px;
-    margin: 20px auto;
-    padding: 0 20px;
+    margin: 0 auto; /* Centraliza o container horizontalmente */
+    padding: 0 20px; /* Margens laterais para o conteúdo não colar nas bordas */
 }
 
-/* --- Barra Superior (Header) --- */
+/* --- BARRA SUPERIOR (HEADER) --- */
 .site-header {
     background-color: #333;
     color: #fff;
-    padding: 1rem 0;
+    padding: 0.8rem 0; /* Altura do cabeçalho (um pouco maior) */
     width: 100%;
 }
 
 .header-content-container {
-    display: flex; /* A mágica do alinhamento horizontal */
-    justify-content: space-between; /* Itens se afastam para as extremidades */
-    align-items: center; /* Alinha verticalmente no centro */
-    padding: 0; /* Remove padding extra para o alinhamento funcionar bem */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-/* Ajustes no H1 dentro do header */
 .site-header h1 {
     margin: 0;
     color: #fff;
-    font-size: 1.5em; /* 24px */
+    font-size: 1.5em;
 }
 
-/* --- Navegação (Nav) dentro da Barra Superior --- */
+/* --- NAVEGAÇÃO (DENTRO DO HEADER) --- */
 .site-header nav ul {
     list-style: none;
     padding: 0;
@@ -70,23 +64,24 @@ a:hover {
     background-color: #555;
 }
 
-/* --- Conteúdo Principal (Main) --- */
-main {
-    background-color: #fff;
-    padding: 25px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+/* --- ÁREA DE CONTEÚDO PRINCIPAL (MAIN) --- */
+.content-wrapper {
+    flex: 1; /* Faz o conteúdo principal crescer e empurrar o rodapé para baixo */
+    width: 100%;
+    background-color: #fff; /* Fundo branco para a área de conteúdo */
+    padding: 30px 0; /* Espaçamento vertical dentro da área de conteúdo */
 }
 
-/* --- Rodapé (Footer) --- */
-footer {
+/* --- RODAPÉ (FOOTER) --- */
+.site-footer {
+    background: #333;
+    color: #fff;
     text-align: center;
-    margin-top: 20px;
-    padding: 20px;
-    color: #777;
+    padding: 0.6rem 0; /* Altura do rodapé (um pouco menor) */
+    width: 100%;
 }
 
-/* --- Estilos para Formulários --- */
+/* --- ESTILOS PARA FORMULÁRIOS --- */
 form {
     display: flex;
     flex-direction: column;
@@ -107,7 +102,7 @@ form select {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    box-sizing: border-box; /* Garante que o padding não afete a largura total */
+    box-sizing: border-box;
 }
 
 form button {
@@ -125,8 +120,7 @@ form button:hover {
     background-color: #0056b3;
 }
 
-
-/* --- Estilos para Listas --- */
+/* --- ESTILOS PARA LISTAS E LINKS --- */
 main ul {
     list-style: none;
     padding: 0;
@@ -141,8 +135,16 @@ main li:last-child {
     border-bottom: none;
 }
 
-/* --- Botões e Links com aparência de botão --- */
-a.button, .button-link {
+main a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+main a:hover {
+    text-decoration: underline;
+}
+
+a.button-link {
     display: inline-block;
     background-color: #28a745;
     color: white;
@@ -152,7 +154,7 @@ a.button, .button-link {
     text-decoration: none;
 }
 
-a.button:hover, .button-link:hover {
+a.button-link:hover {
     background-color: #218838;
     text-decoration: none;
 }

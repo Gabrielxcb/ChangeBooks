@@ -2,8 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout :: layout(~{::body})}">
 <body>
-    <h2>Cadastrar Usuário</h2>
-    <form th:action="@{/usuarios}" th:object="${usuario}" method="post">
+    <h2>Formulário de Usuário</h2>
+    
+    <form th:action="@{/usuarios}" th:object="${usuarioDTO}" method="post">
+        
+        <input type="hidden" th:field="*{id}" />
+
         <label for="nome">Nome:</label>
         <input type="text" th:field="*{nome}" id="nome"><br>
 
@@ -12,6 +16,9 @@
 
         <label for="senha">Senha:</label>
         <input type="password" th:field="*{senha}" id="senha"><br>
+
+        <label for="telefone">Telefone:</label>
+        <input type="text" th:field="*{telefone}" id="telefone"><br>
 
         <button type="submit">Salvar</button>
     </form>
