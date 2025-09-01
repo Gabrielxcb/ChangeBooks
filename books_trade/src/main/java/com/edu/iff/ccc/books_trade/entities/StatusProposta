@@ -1,0 +1,7 @@
+package com.edu.iff.ccc.books_trade.entities;
+
+public enum StatusProposta {
+    PENDENTE,
+    ACEITA,
+    RECUSADA
+}
