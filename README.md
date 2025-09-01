@@ -2,72 +2,63 @@
 
 ## Descrição Geral
 
-O **Book's Trade** é uma aplicação web cujo objetivo é criar uma comunidade de leitores, permitindo que usuários cadastrem os livros que possuem e proponham trocas com outros usuários. A plataforma visa incentivar o compartilhamento de livros, ampliar o acesso à leitura e promover o reaproveitamento de exemplares.
+O **Book's Trade** é uma aplicação web que visa criar uma comunidade de leitores, permitindo que usuários cadastrem livros, proponham trocas e gerenciem suas transações de forma organizada. A plataforma promove o acesso à leitura e o reaproveitamento de exemplares.
 
-Usuários podem visualizar os livros disponíveis, cadastrar seus próprios livros, fazer propostas de troca e aceitar ou recusar propostas recebidas. Além disso, haverá um perfil de **Administrador**, responsável por gerenciar o sistema e moderar os conteúdos.
+## Funcionalidades e Regras de Negócio
 
-
-
-## Objetivos do Sistema
-
-- Incentivar a circulação de livros entre leitores.
-- Facilitar a busca por livros disponíveis para troca.
-- Permitir que usuários proponham e realizem trocas de forma segura e organizada.
-- Oferecer ferramentas administrativas para moderação de conteúdo e gerenciamento de usuários.
-- Manter um histórico de trocas realizadas.
-
-
-
-## Funcionalidades Principais
-
-- Cadastro de usuários.
-- Login e autenticação de usuários.
-- Cadastro de livros (com informações como título, autor, gênero, estado de conservação, etc.).
-- Listagem e busca de livros disponíveis para troca.
-- Envio e gerenciamento de propostas de troca entre usuários.
-- Histórico de trocas realizadas.
-- Moderação e gerenciamento por parte de administradores.
-
-
-
-## Perfis de Usuário
+O sistema suporta os seguintes perfis de usuário e funcionalidades:
 
 ### Usuário Comum
-
-- **Cadastro e Autenticação:** Criar conta e fazer login seguro no sistema.
-- **Gestão de Perfil:** Editar informações pessoais e preferências.
-- **Cadastro de Livros:** Inserir novos livros, com título, autor, gênero, estado de conservação, entre outros.
-- **Visualização de Catálogo:** Consultar a lista de livros disponíveis, com filtros como título, autor e gênero.
-- **Envio de Propostas de Troca:** Escolher livros de interesse e enviar propostas de troca.
-- **Gerenciamento de Propostas:** Visualizar, aceitar ou recusar propostas recebidas.
-- **Histórico de Trocas:** Acompanhar todas as trocas realizadas.
+- **Gestão de Livros:** Cadastro, listagem e busca de livros.
+- **Trocas:** Envio, gerenciamento e histórico de propostas de troca.
+- **Perfil:** Edição de informações pessoais.
 
 ### Administrador
+- **Moderação:** Gerenciamento de usuários e livros.
+- **Monitoramento:** Acesso a histórico e estatísticas da plataforma.
 
-- **Gerenciamento de Usuários:** Consultar, editar ou bloquear perfis de usuários.
-- **Moderação de Livros:** Revisar cadastros de livros, podendo aprovar, editar ou excluir conteúdos.
-- **Monitoramento de Atividades:** Acompanhar estatísticas como número de usuários, número de trocas e livros mais trocados.
-- **Acesso ao Histórico Geral:** Visualizar o histórico completo de trocas realizadas na plataforma.
+### Regras Principais
+- Apenas usuários autenticados podem interagir com o sistema.
+- Livros cadastrados devem ter informações obrigatórias (título, autor, gênero).
+- Propostas de troca podem ser aceitas ou recusadas.
+- Apenas administradores podem moderar o conteúdo.
 
+---
 
+## Tecnologias Utilizadas
 
-## Regras de Negócio
+Este projeto foi desenvolvido com a seguinte stack de tecnologias:
 
-- Apenas usuários autenticados podem cadastrar livros e realizar trocas.
-- Cada livro cadastrado deve conter informações obrigatórias: título, autor, gênero e estado de conservação.
-- Propostas de troca só podem ser feitas por usuários logados.
-- Usuários podem aceitar ou recusar propostas recebidas.
-- O histórico de trocas será mantido permanentemente.
-- Apenas administradores podem excluir livros de terceiros ou bloquear usuários.
-- Todos os cadastros de livros estão sujeitos a moderação para garantir o cumprimento das regras da plataforma.
+- **Linguagem de Programação:** Java 17
+- **Framework:** Spring Boot 3.x
+- **Template Engine:** Thymeleaf
+- **Banco de Dados:** H2 Database (em memória, para desenvolvimento)
+- **Gerenciador de Dependências:** Maven
+- **Ferramentas:** Git e GitHub para controle de versão.
 
+---
 
+## Estrutura do Projeto
 
-## Requisitos Não Funcionais
+O projeto segue a arquitetura em camadas, com pacotes organizados para separar as responsabilidades:
+-> controller           // Lógica de requisições web (views e APIs)
+-> dto                  // Objetos de Transferência de Dados para validação
+-> entities             // Entidades de domínio (modelos do banco de dados)
+-> repository           // Interfaces para acesso ao banco de dados (JPA)
+-> service              // Lógica de negócio da aplicação
 
-- A aplicação será desenvolvida como uma plataforma web responsiva, compatível com desktops, tablets e smartphones.
-- O sistema contará com autenticação segura (com criptografia de senha).
-- Interface será intuitiva e de fácil navegação, acessível para todos os tipos de usuários.
-- O sistema manterá logs de atividades administrativas, garantindo rastreabilidade de ações como exclusões de conteúdo ou bloqueios de usuários.
+---
 
+## Como Executar o Projeto
 
+Para rodar a aplicação localmente, siga os passos abaixo:
+
+1.  **Pré-requisitos:** Certifique-se de ter o **Java 17** e o **Maven** instalados em sua máquina.
+2.  **Clone o Repositório:** Abra o terminal e execute o comando:
+    `git clone https://github.com/Gabrielxcb/ChangeBooks.git`
+3.  **Navegue até a Pasta do Projeto:**
+    `cd books_trade`
+4.  **Execute a Aplicação:** Utilize o Maven para rodar o projeto:
+    `./mvnw spring-boot:run`
+5.  **Acesse a Aplicação:** Após o startup, abra seu navegador e acesse a URL:
+    `http://localhost:8080`
