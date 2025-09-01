@@ -1,15 +1,20 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Perfil</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::body})}">
 <body>
-    <h1>Editar Perfil</h1>
-    <form action="#" method="post">
-        <label>Nome: <input type="text" name="nome"></label><br>
-        <label>Email: <input type="email" name="email"></label><br>
+    <h2>Cadastrar Usuário</h2>
+    <form th:action="@{/usuarios}" th:object="${usuario}" method="post">
+        <label for="nome">Nome:</label>
+        <input type="text" th:field="*{nome}" id="nome"><br>
+
+        <label for="email">Email:</label>
+        <input type="email" th:field="*{email}" id="email"><br>
+
+        <label for="senha">Senha:</label>
+        <input type="password" th:field="*{senha}" id="senha"><br>
+
         <button type="submit">Salvar</button>
     </form>
 </body>
 </html>
+

@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin - Trocas</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::body})}">
 <body>
-    <h1>Gerenciamento de Trocas de Livros</h1>
+    <h2>Administração - Trocas</h2>
     <ul>
-        <li>Troca #1 - <button>Bloquear</button></li>
-        <li>Troca #2 - <button>Bloquear</button></li>
-        <li>Troca #3 - <button>Bloquear</button></li>
-        <li>Troca #4 - <button>Bloquear</button></li>
+        <li th:each="troca : ${trocas}">
+            <span th:text="${troca.usuario.nome}"></span> - <span th:text="${troca.livro.titulo}"></span>
+            <a th:href="@{|/admin/trocas/editar/${troca.id}|}">Editar</a>
+            <a th:href="@{|/admin/trocas/excluir/${troca.id}|}">Excluir</a>
+        </li>
     </ul>
 </body>
 </html>
+

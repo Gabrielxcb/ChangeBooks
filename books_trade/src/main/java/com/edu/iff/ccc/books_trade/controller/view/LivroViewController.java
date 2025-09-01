@@ -26,10 +26,11 @@ public class LivroViewController {
         return "livros"; // livros.html
     }
 
-    @GetMapping("/novo")
+   @GetMapping("/novo")
     public String novoLivroForm(Model model) {
+        // Envia um DTO vazio para o formulário
         model.addAttribute("livroDTO", new LivroDTO());
-        return "livro_form"; // livro_form.html
+        return "livro_form";
     }
 
     @PostMapping
@@ -37,20 +38,20 @@ public class LivroViewController {
                               BindingResult bindingResult, Model model) {
 
         if (bindingResult.hasErrors()) {
-            return "livro_form"; // retorna o formulário com mensagens de erro
+            return "livro_form"; // Se houver erros, retorna para o formulário
         }
-
-        // Conversão DTO -> Entity
+        
+        // A lógica de conversão DTO -> Entidade permanece aqui
         Livro livro = new Livro();
         livro.setTitulo(livroDTO.getTitulo());
         livro.setAutor(livroDTO.getAutor());
         livro.setGenero(livroDTO.getGenero());
         livro.setDescricao(livroDTO.getDescricao());
         livro.setAnoPublicacao(livroDTO.getAnoPublicacao());
-
+        
         livroService.saveLivro(livro);
 
-        return "redirect:/livros"; // redireciona para a lista de livros
+        return "redirect:/livros";
     }
 
     @GetMapping("/{id}")

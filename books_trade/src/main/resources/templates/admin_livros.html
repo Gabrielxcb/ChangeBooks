@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin - Livros</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::body})}">
 <body>
-    <h1>Gerenciamento de Livros</h1>
+    <h2>Administração - Livros</h2>
     <ul>
-        <li>Livro #1 - <button>Bloquear</button></li>
-        <li>Livro #2 - <button>Bloquear</button></li>
-        <li>Livro #3 - <button>Bloquear</button></li>
-        <li>Livro #4 - <button>Bloquear</button></li>
+        <li th:each="livro : ${livros}">
+            <span th:text="${livro.titulo}"></span> - <span th:text="${livro.autor}"></span>
+            <a th:href="@{|/admin/livros/editar/${livro.id}|}">Editar</a>
+            <a th:href="@{|/admin/livros/excluir/${livro.id}|}">Excluir</a>
+        </li>
     </ul>
 </body>
 </html>
+
