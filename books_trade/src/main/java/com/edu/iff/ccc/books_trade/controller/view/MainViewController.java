@@ -1,18 +1,16 @@
 package com.edu.iff.ccc.books_trade.controller.view;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/principal")
+@RequestMapping("/")
 public class MainViewController {
 
-    @GetMapping("/")
+    @GetMapping
     public String getHomePage() {
-        return "index.html";
+        return "index"; // página inicial do sistema
     }
-    
-
 }
+

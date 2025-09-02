@@ -1,13 +1,17 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book's Trade</title>
+    <title>Book's Trade - Início</title>
 </head>
 <body>
-    <h1>Book's Trade</h1>
-
-    <p>O <b>Book's Trade</b> é uma aplicação web cujo objetivo é criar uma comunidade de leitores, permitindo que usuários cadastrem os livros que possuem e proponham trocas com outros usuários. A plataforma visa incentivar o compartilhamento de livros, ampliar o acesso à leitura e promover o reaproveitamento de exemplares.</p>
+    <h1>Bem-vindo ao Book's Trade!</h1>
+    <nav>
+        <a th:href="@{/auth/login}">Login</a> | 
+        <a th:href="@{/auth/register}">Registrar</a> | 
+        <a th:href="@{/livros}">Catálogo de Livros</a> | 
+        <a th:href="@{/trocas}">Propostas de Troca</a> | 
+        <a th:href="@{/admin}">Administração</a>
+    </nav>
 </body>
 </html>
