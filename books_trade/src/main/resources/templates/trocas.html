@@ -1,16 +1,14 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Propostas de Troca</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::body})}">
 <body>
-    <h1>Minhas Trocas</h1>
-    <a th:href="@{/trocas/nova}">Nova Proposta</a>
+    <h2>Lista de Trocas</h2>
     <ul>
-        <li><a th:href="@{/trocas/1}">Troca #1</a></li>
-        <li><a th:href="@{/trocas/1}">Troca #2</a></li>
-        <li><a th:href="@{/trocas/1}">Troca #3</a></li>
+        <li th:each="troca : ${trocas}">
+            <span th:text="${troca.usuario.nome}"></span> oferece <span th:text="${troca.livro.titulo}"></span>
+        </li>
     </ul>
+    <a th:href="@{/trocas/nova}">Registrar nova troca</a>
 </body>
 </html>
+

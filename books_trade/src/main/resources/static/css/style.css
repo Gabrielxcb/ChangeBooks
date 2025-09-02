@@ -1,0 +1,160 @@
+/* --- ESTILOS GLOBAIS E ESTRUTURA DA PÁGINA --- */
+html {
+    height: 100%;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #f4f4f9; /* Fundo cinza claro visível nas laterais */
+    color: #333;
+    line-height: 1.6;
+    min-height: 100vh; /* Garante que o body ocupe 100% da altura da tela */
+    display: flex;
+    flex-direction: column;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto; /* Centraliza o container horizontalmente */
+    padding: 0 20px; /* Margens laterais para o conteúdo não colar nas bordas */
+}
+
+/* --- BARRA SUPERIOR (HEADER) --- */
+.site-header {
+    background-color: #333;
+    color: #fff;
+    padding: 0.8rem 0; /* Altura do cabeçalho (um pouco maior) */
+    width: 100%;
+}
+
+.header-content-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.site-header h1 {
+    margin: 0;
+    color: #fff;
+    font-size: 1.5em;
+}
+
+/* --- NAVEGAÇÃO (DENTRO DO HEADER) --- */
+.site-header nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+.site-header nav ul li a {
+    color: #fff;
+    padding: 10px 15px;
+    display: block;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.site-header nav ul li a:hover {
+    background-color: #555;
+}
+
+/* --- ÁREA DE CONTEÚDO PRINCIPAL (MAIN) --- */
+.content-wrapper {
+    flex: 1; /* Faz o conteúdo principal crescer e empurrar o rodapé para baixo */
+    width: 100%;
+    background-color: #fff; /* Fundo branco para a área de conteúdo */
+    padding: 30px 0; /* Espaçamento vertical dentro da área de conteúdo */
+}
+
+/* --- RODAPÉ (FOOTER) --- */
+.site-footer {
+    background: #333;
+    color: #fff;
+    text-align: center;
+    padding: 0.6rem 0; /* Altura do rodapé (um pouco menor) */
+    width: 100%;
+}
+
+/* --- ESTILOS PARA FORMULÁRIOS --- */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form label {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="password"],
+form input[type="number"],
+form select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+form button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    margin-top: 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+form button:hover {
+    background-color: #0056b3;
+}
+
+/* --- ESTILOS PARA LISTAS E LINKS --- */
+main ul {
+    list-style: none;
+    padding: 0;
+}
+
+main li {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+main li:last-child {
+    border-bottom: none;
+}
+
+main a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+main a:hover {
+    text-decoration: underline;
+}
+
+a.button-link {
+    display: inline-block;
+    background-color: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-top: 15px;
+    text-decoration: none;
+}
+
+a.button-link:hover {
+    background-color: #218838;
+    text-decoration: none;
+}

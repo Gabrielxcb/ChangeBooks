@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::body})}">
+<body>
+    <h2>Lista de Usuários</h2>
+    <ul>
+        <li th:each="usuario : ${usuarios}">
+            <a th:href="@{|/usuarios/${usuario.id}|}" th:text="${usuario.nome}"></a>
+            - <span th:text="${usuario.email}"></span>
+        </li>
+    </ul>
+
+    <br>
+    <a th:href="@{/usuarios/novo}" class="button-link">Cadastrar Novo Usuário</a>
+</body>
+</html>
+

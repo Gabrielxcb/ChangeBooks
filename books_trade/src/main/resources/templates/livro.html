@@ -1,9 +1,6 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title th:text="${livro.titulo}">Livro</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::body})}">
 <body>
     <h1>Detalhes do Livro</h1>
     <p><strong>Título:</strong> <span th:text="${livro.titulo}"></span></p>
@@ -16,5 +13,6 @@
     <a th:href="@{/livros}">Voltar à lista</a>
 </body>
 </html>
+
 
 

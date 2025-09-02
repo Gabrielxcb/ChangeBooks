@@ -1,70 +1,129 @@
 package com.edu.iff.ccc.books_trade.entities;
 
-import java.io.Serializable;
-import java.util.Objects;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotEmpty;
+import java.io.Serializable;
 
 @Entity
-@Table(name="livros_table")
+@Table(name = "livros")
 public class Livro implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message = "O título não pode ser vazio.")
+    @NotBlank(message = "O título do livro não pode ser vazio.")
+    @Size(min = 1, max = 150, message = "O título deve ter entre 1 e 150 caracteres.")
     private String titulo;
 
-    @NotEmpty(message = "O autor não pode ser vazio.")
+    @NotBlank(message = "O nome do autor não pode ser vazio.")
     private String autor;
 
+    @NotBlank(message = "O gênero do livro não pode ser vazio.")
     private String genero;
+
+    @NotBlank(message = "O estado de conservação não pode ser vazio.")
+    private String estadoConservacao;
+
+    private boolean disponivel = true;
+    
     private String descricao;
-    private int anoPublicacao; // novo campo
+    
+    private int anoPublicacao;
 
-    public Livro() {}
+    // Relacionamento com UsuarioComum (dono)
+    @ManyToOne
+    @JoinColumn(name = "dono_id")
+    private UsuarioComum dono;
 
-    public Livro(Long id, String titulo, String autor, String genero, String descricao, int anoPublicacao) {
-        this.id = id;
+    // Construtores
+    public Livro() {
+    }
+
+    public Livro(String titulo, String autor, String genero, String estadoConservacao, UsuarioComum dono, String descricao, int anoPublicacao) {
         this.titulo = titulo;
         this.autor = autor;
         this.genero = genero;
+        this.estadoConservacao = estadoConservacao;
+        this.dono = dono;
         this.descricao = descricao;
         this.anoPublicacao = anoPublicacao;
     }
 
     // Getters e Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getTitulo() { return titulo; }
-    public void setTitulo(String titulo) { this.titulo = titulo; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getAutor() { return autor; }
-    public void setAutor(String autor) { this.autor = autor; }
+    public String getTitulo() {
+        return titulo;
+    }
 
-    public String getGenero() { return genero; }
-    public void setGenero(String genero) { this.genero = genero; }
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
 
-    public String getDescricao() { return descricao; }
-    public void setDescricao(String descricao) { this.descricao = descricao; }
+    public String getAutor() {
+        return autor;
+    }
 
-    public int getAnoPublicacao() { return anoPublicacao; }
-    public void setAnoPublicacao(int anoPublicacao) { this.anoPublicacao = anoPublicacao; }
+    public void setAutor(String autor) {
+        this.autor = autor;
+    }
 
-    @Override
-    public int hashCode() { return Objects.hash(id, titulo); }
+    public String getGenero() {
+        return genero;
+    }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Livro livro = (Livro) obj;
-        return Objects.equals(id, livro.id) && Objects.equals(titulo, livro.titulo);
+    public void setGenero(String genero) {
+        this.genero = genero;
+    }
+
+    public String getEstadoConservacao() {
+        return estadoConservacao;
+    }
+
+    public void setEstadoConservacao(String estadoConservacao) {
+        this.estadoConservacao = estadoConservacao;
+    }
+
+    public boolean isDisponivel() {
+        return disponivel;
+    }
+
+    public void setDisponivel(boolean disponivel) {
+        this.disponivel = disponivel;
+    }
+
+    public UsuarioComum getDono() {
+        return dono;
+    }
+
+    public void setDono(UsuarioComum dono) {
+        this.dono = dono;
+    }
+    
+    public String getDescricao() {
+        return descricao;
+    }
+    
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+    
+    public int getAnoPublicacao() {
+        return anoPublicacao;
+    }
+    
+    public void setAnoPublicacao(int anoPublicacao) {
+        this.anoPublicacao = anoPublicacao;
     }
 }

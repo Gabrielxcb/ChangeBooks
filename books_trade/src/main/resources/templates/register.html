@@ -1,16 +1,20 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Cadastro - Book's Trade</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{auth_layout :: layout(~{::body})}">
 <body>
-    <h1>Registrar Usuário</h1>
-    <form action="#" method="post">
-        <label>Nome: <input type="text" name="nome"></label><br>
-        <label>Email: <input type="email" name="email"></label><br>
-        <label>Senha: <input type="password" name="senha"></label><br>
-        <button type="submit">Registrar</button>
+    <h2>Cadastro</h2>
+    <form th:action="@{/register}" th:object="${usuario}" method="post">
+        <label for="nome">Nome:</label>
+        <input type="text" th:field="*{nome}" id="nome"><br>
+
+        <label for="email">Email:</label>
+        <input type="email" th:field="*{email}" id="email"><br>
+
+        <label for="senha">Senha:</label>
+        <input type="password" th:field="*{senha}" id="senha"><br>
+
+        <button type="submit">Cadastrar</button>
     </form>
 </body>
 </html>
+

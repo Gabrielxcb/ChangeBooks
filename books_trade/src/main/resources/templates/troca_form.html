@@ -1,14 +1,18 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Nova Proposta de Troca</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::body})}">
 <body>
-    <h1>Nova Proposta de Troca</h1>
-    <form action="#" method="post">
-        <label>ID do Livro: <input type="text" name="livroId"></label><br>
-        <button type="submit">Enviar Proposta</button>
+    <h2>Registrar Troca</h2>
+    <form th:action="@{/trocas}" th:object="${troca}" method="post">
+        
+        <label for="usuario">Nome do Usuário:</label>
+        <input type="text" th:field="*{usuario.nome}" id="usuario"><br>
+
+        <label for="livro">Título do Livro:</label>
+        <input type="text" th:field="*{livro.titulo}" id="livro"><br>
+
+        <button type="submit">Registrar</button>
     </form>
 </body>
 </html>
+

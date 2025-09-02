@@ -1,12 +1,24 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Perfil do Usuário</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::body})}">
 <body>
     <h1>Perfil do Usuário</h1>
-    <p>ID do usuário: <span th:text="${usuarioId}"></span></p>
-    <a th:href="@{/usuarios/{id}/editar(id=${usuarioId})}">Editar Perfil</a>
+
+    <div th:if="${usuario != null}">
+        <p><strong>Nome:</strong> <span th:text="${usuario.nome}">Nome do Usuário</span></p>
+        <p><strong>Email:</strong> <span th:text="${usuario.email}">email@example.com</span></p>
+        <p><strong>Telefone:</strong> <span th:text="${usuario.telefone}">9999-9999</span></p>
+
+        <br>
+        <a th:href="@{|/usuarios/${usuario.id}/editar|}">Editar Perfil</a>
+    </div>
+
+    <div th:if="${usuario == null}">
+        <p>Usuário não encontrado.</p>
+    </div>
+
+    <br>
+    <a th:href="@{/usuarios}">Voltar para a lista de usuários</a>
+
 </body>
 </html>

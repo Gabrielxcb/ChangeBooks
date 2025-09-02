@@ -1,9 +1,6 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Detalhes da Troca</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::body})}">
 <body>
     <h1>Detalhes da Troca</h1>
     <p>ID da troca: <span th:text="${trocaId}"></span></p>
@@ -11,3 +8,5 @@
     <button>Recusar</button>
 </body>
 </html>
+
+
