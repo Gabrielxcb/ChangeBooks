@@ -1,18 +1,22 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Catálogo de Livros</title>
+    <title>Lista de Livros</title>
 </head>
 <body>
-    <h1>Livros Disponíveis</h1>
-    <a th:href="@{/livros/novo}">Cadastrar Novo Livro</a>
+    <h1>Lista de Livros</h1>
+
+    <a th:href="@{/livros/novo}">Adicionar Novo Livro</a>
+
     <ul>
-        <li><a th:href="@{/livros/1}">Jogos Vorazes</a></li>
-        <li><a th:href="@{/livros/2}">Guerra dos Tronos</a></li>
-        <li><a th:href="@{/livros/3}">Bird Box</a></li>
-        <li><a th:href="@{/livros/4}">O Conto da Aia</a></li>
-        <li><a th:href="@{/livros/5}">1984</a></li>
+        <li th:each="livro : ${livros}">
+            <a th:href="@{/livros/{id}(id=${livro.id})}">
+                <span th:text="${livro.titulo}">Título</span> - 
+                <span th:text="${livro.autor}">Autor</span>
+            </a>
+        </li>
     </ul>
 </body>
 </html>
+

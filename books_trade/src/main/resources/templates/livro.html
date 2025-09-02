@@ -1,13 +1,20 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Detalhes do Livro</title>
+    <title th:text="${livro.titulo}">Livro</title>
 </head>
 <body>
     <h1>Detalhes do Livro</h1>
-    <p>ID: <span th:text="${livroId}"></span></p>
+    <p><strong>Título:</strong> <span th:text="${livro.titulo}"></span></p>
+    <p><strong>Autor:</strong> <span th:text="${livro.autor}"></span></p>
+    <p><strong>Gênero:</strong> <span th:text="${livro.genero}"></span></p>
+    <p><strong>Descrição:</strong> <span th:text="${livro.descricao}"></span></p>
+    <p><strong>Ano de Publicação:</strong> <span th:text="${livro.anoPublicacao}"></span></p>
+
     <a th:href="@{/trocas/nova}">Propor Troca</a>
+    <a th:href="@{/livros}">Voltar à lista</a>
 </body>
 </html>
+
 
