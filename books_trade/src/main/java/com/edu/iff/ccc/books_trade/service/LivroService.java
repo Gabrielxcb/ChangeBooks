@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import br.edu.iff.ccc.webdev.entities.Livro;
 import br.edu.iff.ccc.webdev.repository.LivroRepository;
+import com.edu.iff.ccc.books_trade.exception.LivroNaoEncontrado;
 
 @Service
 public class LivroService {
@@ -17,14 +18,18 @@ public class LivroService {
     private long idCounter = 1;
 
     public void saveLivro(Livro livro) {
-       livroRepository.saveLivro(livro);
+       livroRepository.save(livro);
     }
 
     public Livro findLivroById(Long id) {
-        return livroRepository.findLivroById(id).isPresent() ? livroRepository.findLivroById(id).get() : null;
+       return livroRepository.findById(id).orElseThrow(() -> new LivroNaoEncontrado("Livro com ID " + id + " não encontrado."));
+    }
+
+    public Livro findLivroById(Long id) {
+        return livroRepository.findById(id).isPresent() ? livroRepository.findById(id).get() : null;
     }
 
     public List<Livro> findAllLivros() {
-        return (ArrayList<Livro>) livroRepository.findAllLivros;
+        return (ArrayList<Livro>) livroRepository.findAll();
     }
 }
