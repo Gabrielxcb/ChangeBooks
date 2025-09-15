@@ -2,18 +2,20 @@ package com.edu.iff.ccc.books_trade.service;
 
 import com.edu.iff.ccc.books_trade.entities.Usuario;
 import com.edu.iff.ccc.books_trade.entities.UsuarioComum;
+import com.edu.iff.ccc.books_trade.repository.UsuarioRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
 
-    private final List<Usuario> usuarios = new ArrayList<>();
-    private long idCounter = 1;
+    @Autowired
+    UsuarioRepository usuarioRepository;
 
     public void saveUsuario(Usuario usuario) {
         if (usuario.getId() == null) {
