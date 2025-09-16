@@ -15,14 +15,29 @@ public class LivroService {
     LivroRepository livroRepository;
 
     public void saveLivro(Livro livro) {
-       livroRepository.save(livro);
+        livroRepository.save(livro);
     }
 
     public Livro findLivroById(Long id) {
-       return livroRepository.findById(id).orElseThrow(() -> new LivroNaoEncontrado("Livro com ID " + id + " não encontrado."));
+        return livroRepository.findById(id).orElseThrow(() -> new LivroNaoEncontrado("Livro com ID " + id + " não encontrado."));
     }
 
     public ArrayList<Livro> findAllLivros() {
         return (ArrayList<Livro>) livroRepository.findAll();
+    }
+
+    public void updateLivro(Long id, Livro livro) {
+        if (!livroRepository.existsById(id)) {
+            throw new LivroNaoEncontrado("Livro com ID " + id + " não encontrado.");
+        }
+        livro.setId(id);  
+        livroRepository.save(livro);
+    }
+
+    public void deleteLivro(Long id) {
+        if (!livroRepository.existsById(id)) {
+            throw new LivroNaoEncontrado("Livro com ID " + id + " não encontrado.");
+        }
+        livroRepository.deleteById(id);
     }
 }
