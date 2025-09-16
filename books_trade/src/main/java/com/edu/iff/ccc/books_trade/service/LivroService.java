@@ -1,47 +1,43 @@
 package com.edu.iff.ccc.books_trade.service;
 
 import com.edu.iff.ccc.books_trade.entities.Livro;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import com.edu.iff.ccc.books_trade.repository.LivroRepository;
+import com.edu.iff.ccc.books_trade.exception.LivroNaoEncontrado;
 
 @Service
 public class LivroService {
 
-    private final List<Livro> livros = new ArrayList<>();
-    private long idCounter = 1;
+    @Autowired
+    LivroRepository livroRepository;
 
     public void saveLivro(Livro livro) {
-        if (livro.getId() == null) {
-            livro.setId(idCounter++);
-        }
-        livros.add(livro);
-        System.out.println("Livro salvo: " + livro.getTitulo() + " - Autor: " + livro.getAutor());
+        livroRepository.save(livro);
     }
 
     public Livro findLivroById(Long id) {
-        return livros.stream()
-                .filter(l -> l.getId().equals(id))
-                .findFirst()
-                .orElse(null);
+        return livroRepository.findById(id).orElseThrow(() -> new LivroNaoEncontrado("Livro com ID " + id + " não encontrado."));
     }
 
-    public List<Livro> findAllLivros() {
-        if (livros.isEmpty()) {
-            Livro livro1 = new Livro("Rainha Vermelha", "Victoria Aveyard", "Fantasia", "Usado", null, "Descrição de Rainha Vermelha", 2015);
-            livro1.setId(idCounter++);
-            livros.add(livro1);
+    public ArrayList<Livro> findAllLivros() {
+        return (ArrayList<Livro>) livroRepository.findAll();
+    }
 
-            Livro livro2 = new Livro("A Cor Púrpura", "Alice Walker", "Ficção", "Novo", null, "Descrição de A Cor Púrpura", 1982);
-            livro2.setId(idCounter++);
-            livros.add(livro2);
-
-            Livro livro3 = new Livro("1984", "George Orwell", "Distopia", "Semi-novo", null, "Descrição de 1984", 1949);
-            livro3.setId(idCounter++);
-            livros.add(livro3);
+    public void updateLivro(Long id, Livro livro) {
+        if (!livroRepository.existsById(id)) {
+            throw new LivroNaoEncontrado("Livro com ID " + id + " não encontrado.");
         }
-        return new ArrayList<>(livros);
+        livro.setId(id);  
+        livroRepository.save(livro);
+    }
+
+    public void deleteLivro(Long id) {
+        if (!livroRepository.existsById(id)) {
+            throw new LivroNaoEncontrado("Livro com ID " + id + " não encontrado.");
+        }
+        livroRepository.deleteById(id);
     }
 }
