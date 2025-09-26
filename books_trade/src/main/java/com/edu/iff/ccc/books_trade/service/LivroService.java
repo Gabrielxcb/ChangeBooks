@@ -1,47 +1,46 @@
 package com.edu.iff.ccc.books_trade.service;
 
 import com.edu.iff.ccc.books_trade.entities.Livro;
+import com.edu.iff.ccc.books_trade.repository.LivroRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LivroService {
 
-    private final List<Livro> livros = new ArrayList<>();
-    private long idCounter = 1;
+    private final LivroRepository livroRepository;
 
-    public void saveLivro(Livro livro) {
-        if (livro.getId() == null) {
-            livro.setId(idCounter++);
-        }
-        livros.add(livro);
-        System.out.println("Livro salvo: " + livro.getTitulo() + " - Autor: " + livro.getAutor());
+    @Autowired
+    public LivroService(LivroRepository livroRepository) {
+        this.livroRepository = livroRepository;
     }
 
+    @Transactional
+    public Livro saveLivro(Livro livro) {
+        // A lógica de ID é gerenciada pelo banco de dados agora
+        return livroRepository.save(livro);
+    }
+
+    @Transactional(readOnly = true)
     public Livro findLivroById(Long id) {
-        return livros.stream()
-                .filter(l -> l.getId().equals(id))
-                .findFirst()
-                .orElse(null);
+        return livroRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Livro não encontrado com o ID: " + id));
     }
-
+    
+    @Transactional(readOnly = true)
     public List<Livro> findAllLivros() {
-        if (livros.isEmpty()) {
-            Livro livro1 = new Livro("Rainha Vermelha", "Victoria Aveyard", "Fantasia", "Usado", null, "Descrição de Rainha Vermelha", 2015);
-            livro1.setId(idCounter++);
-            livros.add(livro1);
-
-            Livro livro2 = new Livro("A Cor Púrpura", "Alice Walker", "Ficção", "Novo", null, "Descrição de A Cor Púrpura", 1982);
-            livro2.setId(idCounter++);
-            livros.add(livro2);
-
-            Livro livro3 = new Livro("1984", "George Orwell", "Distopia", "Semi-novo", null, "Descrição de 1984", 1949);
-            livro3.setId(idCounter++);
-            livros.add(livro3);
+        return livroRepository.findAll();
+    }
+    
+    @Transactional
+    public void deleteLivroById(Long id) {
+        if (!livroRepository.existsById(id)) {
+            throw new IllegalArgumentException("Livro não encontrado com o ID: " + id);
         }
-        return new ArrayList<>(livros);
+        livroRepository.deleteById(id);
     }
 }

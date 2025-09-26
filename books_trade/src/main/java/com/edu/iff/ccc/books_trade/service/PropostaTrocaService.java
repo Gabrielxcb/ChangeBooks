@@ -3,91 +3,100 @@ package com.edu.iff.ccc.books_trade.service;
 import com.edu.iff.ccc.books_trade.entities.Livro;
 import com.edu.iff.ccc.books_trade.entities.PropostaTroca;
 import com.edu.iff.ccc.books_trade.entities.StatusProposta;
+import com.edu.iff.ccc.books_trade.entities.Usuario;
 import com.edu.iff.ccc.books_trade.entities.UsuarioComum;
+import com.edu.iff.ccc.books_trade.repository.LivroRepository;
+import com.edu.iff.ccc.books_trade.repository.PropostaTrocaRepository;
+import com.edu.iff.ccc.books_trade.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class PropostaTrocaService {
 
-    @Autowired
-    private LivroService livroService;
+    private final PropostaTrocaRepository propostaRepository;
+    private final LivroRepository livroRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final TrocaService trocaService; // Injetando o TrocaService
 
     @Autowired
-    private UsuarioService usuarioService;
+    public PropostaTrocaService(PropostaTrocaRepository propostaRepository, LivroRepository livroRepository,
+                                UsuarioRepository usuarioRepository, TrocaService trocaService) {
+        this.propostaRepository = propostaRepository;
+        this.livroRepository = livroRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.trocaService = trocaService;
+    }
 
-    private final List<PropostaTroca> propostas = new ArrayList<>();
-    private long idCounter = 1;
-
+    @Transactional
     public PropostaTroca criarProposta(Long livroOfertadoId, Long livroDesejadoId, Long remetenteId, Long destinatarioId) {
-        Livro livroOfertado = livroService.findLivroById(livroOfertadoId);
-        Livro livroDesejado = livroService.findLivroById(livroDesejadoId);
-        
-        Optional<UsuarioComum> remetente = usuarioService.findUsuarioById(remetenteId)
-                .filter(u -> u instanceof UsuarioComum)
-                .map(u -> (UsuarioComum) u);
-        
-        Optional<UsuarioComum> destinatario = usuarioService.findUsuarioById(destinatarioId)
-                .filter(u -> u instanceof UsuarioComum)
-                .map(u -> (UsuarioComum) u);
-        
-        if (livroOfertado == null || livroDesejado == null || !remetente.isPresent() || !destinatario.isPresent()) {
-            throw new IllegalArgumentException("IDs de livro ou usuário inválidos.");
+        Livro livroOfertado = livroRepository.findById(livroOfertadoId)
+                .orElseThrow(() -> new IllegalArgumentException("Livro ofertado inválido."));
+        Livro livroDesejado = livroRepository.findById(livroDesejadoId)
+                .orElseThrow(() -> new IllegalArgumentException("Livro desejado inválido."));
+
+        Usuario remetente = usuarioRepository.findById(remetenteId)
+                .orElseThrow(() -> new IllegalArgumentException("Remetente inválido."));
+        Usuario destinatario = usuarioRepository.findById(destinatarioId)
+                .orElseThrow(() -> new IllegalArgumentException("Destinatário inválido."));
+
+        if (!(remetente instanceof UsuarioComum) || !(destinatario instanceof UsuarioComum)) {
+            throw new ClassCastException("Remetente e Destinatário devem ser Usuários Comuns.");
         }
 
         PropostaTroca novaProposta = new PropostaTroca();
-        novaProposta.setId(idCounter++);
         novaProposta.setLivroOfertado(livroOfertado);
         novaProposta.setLivroDesejado(livroDesejado);
-        novaProposta.setRemetente(remetente.get());
-        novaProposta.setDestinatario(destinatario.get());
+        novaProposta.setRemetente((UsuarioComum) remetente);
+        novaProposta.setDestinatario((UsuarioComum) destinatario);
         novaProposta.setStatus(StatusProposta.PENDENTE);
         novaProposta.setDataEnvio(new Date());
 
-        propostas.add(novaProposta);
-        System.out.println("Proposta de troca criada com sucesso! ID: " + novaProposta.getId());
-        return novaProposta;
+        return propostaRepository.save(novaProposta);
     }
 
+    @Transactional(readOnly = true)
     public List<PropostaTroca> findPropostasByUsuarioId(Long usuarioId) {
-        return propostas.stream()
-                .filter(p -> p.getRemetente().getId().equals(usuarioId) || p.getDestinatario().getId().equals(usuarioId))
-                .collect(Collectors.toList());
+        return propostaRepository.findByRemetenteIdOrDestinatarioId(usuarioId, usuarioId);
     }
 
+    @Transactional(readOnly = true)
     public Optional<PropostaTroca> findPropostaById(Long id) {
-        return propostas.stream()
-                .filter(p -> p.getId().equals(id))
-                .findFirst();
-    }
-    
-    public PropostaTroca aceitarProposta(Long propostaId) {
-        Optional<PropostaTroca> propostaOpt = findPropostaById(propostaId);
-        if (propostaOpt.isPresent() && propostaOpt.get().getStatus() == StatusProposta.PENDENTE) {
-            PropostaTroca proposta = propostaOpt.get();
-            proposta.setStatus(StatusProposta.ACEITA);
-            System.out.println("Proposta ID " + propostaId + " aceita.");
-            // Lógica para criar a Troca
-            // trocaService.criarTroca(proposta);
-            return proposta;
-        }
-        return null;
+        return propostaRepository.findById(id);
     }
 
-    public PropostaTroca recusarProposta(Long propostaId) {
-        Optional<PropostaTroca> propostaOpt = findPropostaById(propostaId);
-        if (propostaOpt.isPresent() && propostaOpt.get().getStatus() == StatusProposta.PENDENTE) {
-            PropostaTroca proposta = propostaOpt.get();
-            proposta.setStatus(StatusProposta.RECUSADA);
-            System.out.println("Proposta ID " + propostaId + " recusada.");
-            return proposta;
+    @Transactional
+    public PropostaTroca aceitarProposta(Long propostaId) {
+        PropostaTroca proposta = propostaRepository.findById(propostaId)
+                .orElseThrow(() -> new IllegalArgumentException("Proposta não encontrada."));
+
+        if (proposta.getStatus() == StatusProposta.PENDENTE) {
+            proposta.setStatus(StatusProposta.ACEITA);
+            
+            // Lógica para criar a Troca (agora está ativa)
+            trocaService.criarTroca(proposta);
+            
+            // TODO: Adicionar lógica para marcar livros como indisponíveis
+            
+            return propostaRepository.save(proposta);
         }
-        return null;
+        throw new IllegalStateException("Esta proposta não pode mais ser aceita.");
+    }
+
+    @Transactional
+    public PropostaTroca recusarProposta(Long propostaId) {
+        PropostaTroca proposta = propostaRepository.findById(propostaId)
+                .orElseThrow(() -> new IllegalArgumentException("Proposta não encontrada."));
+
+        if (proposta.getStatus() == StatusProposta.PENDENTE) {
+            proposta.setStatus(StatusProposta.RECUSADA);
+            return propostaRepository.save(proposta);
+        }
+        throw new IllegalStateException("Esta proposta não pode mais ser recusada.");
     }
 }
