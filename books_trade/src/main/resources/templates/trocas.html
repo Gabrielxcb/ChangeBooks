@@ -2,13 +2,32 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout :: layout(~{::body})}">
 <body>
-    <h2>Lista de Trocas</h2>
-    <ul>
-        <li th:each="troca : ${trocas}">
-            <span th:text="${troca.usuario.nome}"></span> oferece <span th:text="${troca.livro.titulo}"></span>
-        </li>
-    </ul>
-    <a th:href="@{/trocas/nova}">Registrar nova troca</a>
+    <h2>Lista de Propostas de Troca</h2>
+    
+    <table border="1" style="width:100%;">
+        <thead>
+            <tr>
+                <th>Proponente (Remetente)</th>
+                <th>Livro Ofertado</th>
+                <th>Dono do Livro (Destinatário)</th>
+                <th>Livro Desejado</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="proposta : ${propostas}">
+                <td th:text="${proposta.remetente.nome}"></td>
+                <td th:text="${proposta.livroOfertado.titulo}"></td>
+                <td th:text="${proposta.destinatario.nome}"></td>
+                <td th:text="${proposta.livroDesejado.titulo}"></td>
+                <td th:text="${proposta.status}"></td>
+                <td>
+                    <a href="#">Ver Detalhes</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </body>
 </html>
 

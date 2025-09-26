@@ -99,4 +99,8 @@ public class PropostaTrocaService {
         }
         throw new IllegalStateException("Esta proposta não pode mais ser recusada.");
     }
+
+    public List<PropostaTroca> findAll() {
+    return propostaRepository.findAll();
+    }
 }

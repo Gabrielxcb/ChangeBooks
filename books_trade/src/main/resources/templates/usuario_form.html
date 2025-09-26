@@ -8,17 +8,28 @@
         
         <input type="hidden" th:field="*{id}" />
 
-        <label for="nome">Nome:</label>
-        <input type="text" th:field="*{nome}" id="nome"><br>
+        <div>
+            <label for="nome">Nome:</label>
+            <input type="text" th:field="*{nome}" id="nome">
+            <span style="color:red" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></span>
+        </div>
+        
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" th:field="*{email}" id="email">
+            <span style="color:red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+        </div>
 
-        <label for="email">Email:</label>
-        <input type="email" th:field="*{email}" id="email"><br>
+        <div>
+            <label for="senha">Senha:</label>
+            <input type="password" th:field="*{senha}" id="senha">
+            <span style="color:red" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></span>
+        </div>
 
-        <label for="senha">Senha:</label>
-        <input type="password" th:field="*{senha}" id="senha"><br>
-
-        <label for="telefone">Telefone:</label>
-        <input type="text" th:field="*{telefone}" id="telefone"><br>
+        <div>
+            <label for="telefone">Telefone:</label>
+            <input type="text" th:field="*{telefone}" id="telefone">
+        </div>
 
         <button type="submit">Salvar</button>
     </form>

@@ -5,11 +5,12 @@
     <h1>Detalhes do Livro</h1>
     <p><strong>Título:</strong> <span th:text="${livro.titulo}"></span></p>
     <p><strong>Autor:</strong> <span th:text="${livro.autor}"></span></p>
-    <p><strong>Gênero:</strong> <span th:text="${livro.genero}"></span></p>
+    <p><strong>Estado:</strong> <span th:text="${livro.estadoConservacao}"></span></p>
+    <p><strong>Dono:</strong> <span th:text="${livro.dono.nome}"></span></p>
     <p><strong>Descrição:</strong> <span th:text="${livro.descricao}"></span></p>
-    <p><strong>Ano de Publicação:</strong> <span th:text="${livro.anoPublicacao}"></span></p>
 
-    <a th:href="@{/trocas/nova}">Propor Troca</a>
+    <a th:href="@{/trocas/propor(livroDesejadoId=${livro.id})}">Propor Troca</a>
+    
     <a th:href="@{/livros}">Voltar à lista</a>
 </body>
 </html>
