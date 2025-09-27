@@ -23,7 +23,6 @@ public class UsuarioComum extends Usuario {
     @OneToMany(mappedBy = "destinatario")
     private List<PropostaTroca> propostasRecebidas;
 
-    // Construtores
     public UsuarioComum() {
         super();
     }
@@ -32,7 +31,6 @@ public class UsuarioComum extends Usuario {
         super(nome, email, senha, telefone);
     }
 
-    // Getters e Setters
     public List<Livro> getLivrosCadastrados() {
         return livrosCadastrados;
     }

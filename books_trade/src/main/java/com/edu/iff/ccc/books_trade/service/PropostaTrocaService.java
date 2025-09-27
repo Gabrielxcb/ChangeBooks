@@ -78,7 +78,6 @@ public class PropostaTrocaService {
         if (proposta.getStatus() == StatusProposta.PENDENTE) {
             proposta.setStatus(StatusProposta.ACEITA);
             
-            // Lógica para criar a Troca (histórico)
             trocaService.criarTroca(proposta);
             
             // LÓGICA DE NEGÓCIO CRÍTICA: Torna os livros indisponíveis
@@ -96,7 +95,6 @@ public class PropostaTrocaService {
         throw new IllegalStateException("Esta proposta não pode mais ser aceita.");
     }
 
-    // MÉTODO MODIFICADO
     @Transactional
     public PropostaTroca recusarProposta(Long propostaId) {
         PropostaTroca proposta = propostaRepository.findById(propostaId)

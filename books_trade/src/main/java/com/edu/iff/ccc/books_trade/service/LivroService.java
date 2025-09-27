@@ -24,7 +24,6 @@ public class LivroService {
 
     @Transactional
     public Livro saveLivro(Livro livro) {
-        // A lógica de ID é gerenciada pelo banco de dados agora
         return livroRepository.save(livro);
     }
 
@@ -49,13 +48,11 @@ public class LivroService {
 
     @Transactional(readOnly = true)
     public List<Livro> findLivrosByDonoId(Long donoId) {
-        // Chama o novo método do repositório
         return livroRepository.findByDonoIdAndDisponivelIsTrue(donoId);
     }
 
     @Transactional(readOnly = true)
     public List<Livro> findLivrosDisponiveis(Long meuId) {
-        // Chama o novo método do repositório
         return livroRepository.findByDonoIdNotAndDisponivelIsTrue(meuId);
     }
 

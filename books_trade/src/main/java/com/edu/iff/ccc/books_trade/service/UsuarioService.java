@@ -43,7 +43,6 @@ public class UsuarioService implements UserDetailsService {
         return new User(usuario.getEmail(), usuario.getSenha(), authorities);
     }
     
-    // MÉTODO RENOMEADO E ESPECÍFICO PARA NOVOS USUÁRIOS
     @Transactional
     public Usuario criarNovoUsuario(Usuario usuario) {
         // Este método SEMPRE criptografa a senha, pois é para um novo cadastro.
@@ -51,10 +50,8 @@ public class UsuarioService implements UserDetailsService {
         return usuarioRepository.save(usuario);
     }
 
-    // NOVO MÉTODO PARA ATUALIZAR USUÁRIOS EXISTENTES
     @Transactional
     public Usuario updateUsuario(Usuario usuario) {
-        // Este método NÃO mexe na senha. Ele apenas salva outras alterações (nome, telefone, etc.).
         return usuarioRepository.save(usuario);
     }
 
