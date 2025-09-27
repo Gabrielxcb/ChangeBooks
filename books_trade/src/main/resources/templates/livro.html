@@ -13,18 +13,29 @@
     
     <p><strong>Descrição:</strong> <span th:text="${livro.descricao}"></span></p>
     
-    <br>
+    <hr>
 
-    <div sec:authorize="isAuthenticated()" th:if="${livro.dono.id != usuarioLogadoId}">
-        <a th:href="@{/trocas/propor(livroDesejadoId=${livro.id})}">Propor Troca</a>
-    </div>
-
-    <div sec:authorize="isAuthenticated()" th:if="${livro.dono.id == usuarioLogadoId}">
-        <p><strong>Este livro pertence a você.</strong></p>
+    <div>
+        <div sec:authorize="isAuthenticated()" th:if="${livro.dono.id != usuarioLogadoId}">
+            <a th:href="@{/trocas/propor(livroDesejadoId=${livro.id})}" class="button">Propor Troca</a>
         </div>
-    
-    <br>
-    <a th:href="@{/livros}">Voltar à lista</a>
+
+        <div sec:authorize="isAuthenticated()" th:if="${livro.dono.id == usuarioLogadoId}">
+            <p><strong>Este livro é seu.</strong></p>
+            
+            <a th:href="@{|/livros/${livro.id}/editar|}" class="button">Editar</a>
+            
+            <form th:action="@{|/livros/${livro.id}/excluir|}" method="post" style="display: inline; margin-left: 10px;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este livro?');" class="button-danger">
+                    Excluir
+                </button>
+            </form>
+        </div>
+        
+        <br>
+        <a th:href="@{/livros}" style="margin-top: 20px; display: inline-block;">Voltar à lista</a>
+    </div>
 </body>
 </html>
 

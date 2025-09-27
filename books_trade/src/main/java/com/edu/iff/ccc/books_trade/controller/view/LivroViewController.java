@@ -53,25 +53,72 @@ public class LivroViewController {
         return "livro_form";
     }
 
+    // MÉTODO MODIFICADO: Agora ele lida com CRIAR e ATUALIZAR
     @PostMapping
-    public String salvarLivro(@Valid @ModelAttribute("livroDTO") LivroDTO livroDTO,
-                              BindingResult bindingResult, Model model) {
+    public String salvarOuAtualizarLivro(@Valid @ModelAttribute("livroDTO") LivroDTO livroDTO,
+                                         BindingResult bindingResult, Principal principal) {
         if (bindingResult.hasErrors()) {
             return "livro_form";
         }
-        UsuarioComum donoComum = (UsuarioComum) usuarioService.findUsuarioById(livroDTO.getDonoId())
-                .orElseThrow(() -> new IllegalArgumentException("Dono do livro inválido. ID: " + livroDTO.getDonoId()));
-        Livro livro = new Livro();
-        livro.setTitulo(livroDTO.getTitulo());
-        livro.setAutor(livroDTO.getAutor());
-        livro.setGenero(livroDTO.getGenero());
-        livro.setDescricao(livroDTO.getDescricao());
-        livro.setAnoPublicacao(livroDTO.getAnoPublicacao());
-        livro.setEstadoConservacao(livroDTO.getEstadoConservacao());
-        donoComum.addLivro(livro);
         
-        // CORREÇÃO APLICADA AQUI:
-        usuarioService.updateUsuario(donoComum); 
+        Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        if (livroDTO.getId() == null) {
+            // Lógica para CRIAR um novo livro
+            UsuarioComum donoComum = (UsuarioComum) usuarioLogado;
+            Livro novoLivro = new Livro();
+            // ... (preenche o novoLivro com dados do DTO)
+            novoLivro.setTitulo(livroDTO.getTitulo());
+            novoLivro.setAutor(livroDTO.getAutor());
+            novoLivro.setGenero(livroDTO.getGenero());
+            novoLivro.setDescricao(livroDTO.getDescricao());
+            novoLivro.setAnoPublicacao(livroDTO.getAnoPublicacao());
+            novoLivro.setEstadoConservacao(livroDTO.getEstadoConservacao());
+            
+            donoComum.addLivro(novoLivro);
+            usuarioService.updateUsuario(donoComum);
+        } else {
+            // Lógica para ATUALIZAR um livro existente
+            livroService.updateLivro(livroDTO.getId(), livroDTO, usuarioLogado);
+        }
+        
+        return "redirect:/livros";
+    }
+
+    // NOVO MÉTODO: Exibe o formulário de edição
+    @GetMapping("/{id}/editar")
+    public String editarLivroForm(@PathVariable("id") Long livroId, Model model, Principal principal) {
+        Livro livro = livroService.findLivroById(livroId);
+        
+        // Verificação de segurança: o usuário logado é o dono do livro?
+        if (!livro.getDono().getEmail().equals(principal.getName())) {
+            // Se não for, redireciona ou mostra uma página de erro
+            return "redirect:/livros"; 
+        }
+
+        // Converte a Entidade para DTO para popular o formulário
+        LivroDTO livroDTO = new LivroDTO();
+        livroDTO.setId(livro.getId());
+        livroDTO.setTitulo(livro.getTitulo());
+        livroDTO.setAutor(livro.getAutor());
+        livroDTO.setGenero(livro.getGenero());
+        livroDTO.setEstadoConservacao(livro.getEstadoConservacao());
+        livroDTO.setDescricao(livro.getDescricao());
+        livroDTO.setAnoPublicacao(livro.getAnoPublicacao());
+        livroDTO.setDonoId(livro.getDono().getId());
+        
+        model.addAttribute("livroDTO", livroDTO);
+        return "livro_form";
+    }
+    
+    // NOVO MÉTODO: Processa a exclusão
+    @PostMapping("/{id}/excluir")
+    public String excluirLivro(@PathVariable("id") Long livroId, Principal principal) {
+        Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        
+        livroService.deleteLivro(livroId, usuarioLogado);
         
         return "redirect:/livros";
     }

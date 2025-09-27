@@ -20,24 +20,30 @@ public class SecurityConfig {
                 // 1. REGRAS PÚBLICAS: Acesso permitido a todos
                 .requestMatchers(HttpMethod.GET, "/", "/livros", "/livros/{id}").permitAll()
                 .requestMatchers("/auth/**", "/css/**", "/js/**", "/images/**").permitAll()
-                // Permite que usuários não logados se cadastrem (POST para /usuarios)
-                .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
+                .requestMatchers(HttpMethod.POST, "/usuarios").permitAll() // Cadastro
 
                 // 2. REGRAS PRIVADAS: Exigem autenticação
                 .requestMatchers("/livros/novo", "/trocas/**", "/usuarios/perfil/**").authenticated()
-                .requestMatchers(HttpMethod.POST, "/livros").authenticated() // POST para criar livros
-                .requestMatchers("/admin/**").authenticated() // Toda a área de admin
+                .requestMatchers(HttpMethod.POST, "/livros").authenticated() // Salvar (criar e editar)
+                
+                // --- NOVAS REGRAS ADICIONADAS AQUI ---
+                // Permite acessar o formulário de edição e executar a exclusão
+                .requestMatchers("/livros/{id}/editar").authenticated()
+                .requestMatchers(HttpMethod.POST, "/livros/{id}/excluir").authenticated()
+                // -----------------------------------------
+                
+                .requestMatchers("/admin/**").authenticated()
 
                 // 3. Qualquer outra requisição não mapeada será negada
                 .anyRequest().denyAll()
             )
             .formLogin(form -> form
                 .loginPage("/auth/login")
-                .defaultSuccessUrl("/livros", true) // Após login, vai para a lista de livros
+                .defaultSuccessUrl("/livros", true)
                 .permitAll()
             )
             .logout(logout -> logout
-                .logoutSuccessUrl("/") // Após logout, vai para a home
+                .logoutSuccessUrl("/")
                 .permitAll()
             );
 
