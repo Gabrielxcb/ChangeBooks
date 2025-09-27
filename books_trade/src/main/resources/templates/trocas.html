@@ -2,15 +2,19 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout :: layout(~{::body})}">
 <body>
-    <h2>Lista de Propostas de Troca</h2>
+    <h2>Minhas Propostas de Troca</h2>
     
-    <table border="1" style="width:100%;">
+    <div th:if="${#lists.isEmpty(propostas)}">
+        <p>Você ainda não tem nenhuma proposta enviada ou recebida.</p>
+    </div>
+
+    <table border="1" style="width:100%;" th:if="${not #lists.isEmpty(propostas)}">
         <thead>
             <tr>
-                <th>Proponente (Remetente)</th>
-                <th>Livro Ofertado</th>
-                <th>Dono do Livro (Destinatário)</th>
-                <th>Livro Desejado</th>
+                <th>De</th>
+                <th>Oferece</th>
+                <th>Para</th>
+                <th>Deseja</th>
                 <th>Status</th>
                 <th>Ações</th>
             </tr>
@@ -24,12 +28,25 @@
                 <td th:text="${proposta.status}"></td>
                 <td>
                     <div th:if="${proposta.destinatario.id == usuarioLogadoId and proposta.status.name() == 'PENDENTE'}">
-                        <button>Aceitar</button>
-                        <button>Recusar</button>
+                        
+                        <form th:action="@{/trocas/{id}/aceitar(id=${proposta.id})}" method="post" style="display:inline;">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <button type="submit">Aceitar</button>
+                        </form>
+
+                        <form th:action="@{/trocas/{id}/recusar(id=${proposta.id})}" method="post" style="display:inline;">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <button type="submit">Recusar</button>
+                        </form>
+
                     </div>
-                    <div th:if="${proposta.remetente.id == usuarioLogadoId}">
-                <span>(Proposta enviada por você)</span>
-                    </div>
+                    
+                    <span th:if="${proposta.remetente.id == usuarioLogadoId and proposta.status.name() == 'PENDENTE'}">
+                        Aguardando resposta...
+                    </span>
+                    <span th:if="${proposta.status.name() != 'PENDENTE'}">
+                        Proposta finalizada.
+                    </span>
                 </td>
             </tr>
         </tbody>

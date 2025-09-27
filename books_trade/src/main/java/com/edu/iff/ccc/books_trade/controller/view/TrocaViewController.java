@@ -59,7 +59,7 @@ public class TrocaViewController {
         Livro livroDesejado = livroService.findLivroById(livroDesejadoId);
 
         // 3. Pega a lista de livros DIRETAMENTE do objeto remetente.
-        List<Livro> livrosOfertados = remetente.getLivrosCadastrados();
+        List<Livro> livrosOfertados = livroService.findLivrosByDonoId(remetente.getId());
 
         // --- PASSO DE DEBUG PARA TER CERTEZA ---
         // Adicione esta linha temporariamente para ver no console o que está acontecendo.
@@ -92,6 +92,16 @@ public class TrocaViewController {
         return "redirect:/trocas";
     }
 
-    // Futuramente, adicionaremos métodos para aceitar/recusar propostas aqui
+    @PostMapping("/{id}/aceitar")
+    public String aceitarProposta(@PathVariable("id") Long propostaId) {
+        propostaService.aceitarProposta(propostaId);
+        return "redirect:/trocas";
+    }
+
+    @PostMapping("/{id}/recusar")
+    public String recusarProposta(@PathVariable("id") Long propostaId) {
+        propostaService.recusarProposta(propostaId);
+        return "redirect:/trocas";
+    }
 }
 

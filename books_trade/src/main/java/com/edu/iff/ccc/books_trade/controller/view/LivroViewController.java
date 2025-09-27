@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.lang.Nullable;
 import java.security.Principal;
 import java.util.List;
 
@@ -77,10 +77,21 @@ public class LivroViewController {
     }
 
     @GetMapping("/{id}")
-    public String detalhesLivro(@PathVariable("id") Long id, Model model) {
+    public String detalhesLivro(@PathVariable("id") Long id, Model model, @Nullable Principal principal) {
+    
+        // Busca o livro normalmente
         Livro livro = livroService.findLivroById(id);
         model.addAttribute("livro", livro);
-        return "livro";
+    
+        // Verifica se há um usuário logado
+        if (principal != null) {
+            // Se houver, busca o ID dele e envia para o template
+            Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+            model.addAttribute("usuarioLogadoId", usuarioLogado.getId());
+        }
+    
+        return "livro"; // livro.html
     }
 }
 

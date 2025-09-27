@@ -20,9 +20,9 @@ import java.util.Optional;
 public class PropostaTrocaService {
 
     private final PropostaTrocaRepository propostaRepository;
-    private final LivroRepository livroRepository;
+    private final LivroRepository livroRepository; // Usaremos para salvar os livros
     private final UsuarioRepository usuarioRepository;
-    private final TrocaService trocaService; // Injetando o TrocaService
+    private final TrocaService trocaService;
 
     @Autowired
     public PropostaTrocaService(PropostaTrocaRepository propostaRepository, LivroRepository livroRepository,
@@ -78,16 +78,25 @@ public class PropostaTrocaService {
         if (proposta.getStatus() == StatusProposta.PENDENTE) {
             proposta.setStatus(StatusProposta.ACEITA);
             
-            // Lógica para criar a Troca (agora está ativa)
+            // Lógica para criar a Troca (histórico)
             trocaService.criarTroca(proposta);
             
-            // TODO: Adicionar lógica para marcar livros como indisponíveis
+            // LÓGICA DE NEGÓCIO CRÍTICA: Torna os livros indisponíveis
+            Livro livroOfertado = proposta.getLivroOfertado();
+            Livro livroDesejado = proposta.getLivroDesejado();
+            
+            livroOfertado.setDisponivel(false);
+            livroDesejado.setDisponivel(false);
+            
+            livroRepository.save(livroOfertado);
+            livroRepository.save(livroDesejado);
             
             return propostaRepository.save(proposta);
         }
         throw new IllegalStateException("Esta proposta não pode mais ser aceita.");
     }
 
+    // MÉTODO MODIFICADO
     @Transactional
     public PropostaTroca recusarProposta(Long propostaId) {
         PropostaTroca proposta = propostaRepository.findById(propostaId)

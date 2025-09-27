@@ -46,11 +46,13 @@ public class LivroService {
 
     @Transactional(readOnly = true)
     public List<Livro> findLivrosByDonoId(Long donoId) {
-        return livroRepository.findByDonoId(donoId);
+        // Chama o novo método do repositório
+        return livroRepository.findByDonoIdAndDisponivelIsTrue(donoId);
     }
 
     @Transactional(readOnly = true)
     public List<Livro> findLivrosDisponiveis(Long meuId) {
-        return livroRepository.findByDonoIdNot(meuId);
+        // Chama o novo método do repositório
+        return livroRepository.findByDonoIdNotAndDisponivelIsTrue(meuId);
     }
 }

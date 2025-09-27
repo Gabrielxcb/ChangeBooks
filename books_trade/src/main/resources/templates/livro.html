@@ -1,16 +1,29 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{layout :: layout(~{::body})}">
 <body>
     <h1>Detalhes do Livro</h1>
     <p><strong>Título:</strong> <span th:text="${livro.titulo}"></span></p>
     <p><strong>Autor:</strong> <span th:text="${livro.autor}"></span></p>
+    <p><strong>Gênero:</strong> <span th:text="${livro.genero}"></span></p>
+    <p><strong>Ano de Publicação:</strong> <span th:text="${livro.anoPublicacao}"></span></p>
     <p><strong>Estado:</strong> <span th:text="${livro.estadoConservacao}"></span></p>
     <p><strong>Dono:</strong> <span th:text="${livro.dono.nome}"></span></p>
-    <p><strong>Descrição:</strong> <span th:text="${livro.descricao}"></span></p>
-
-    <a th:href="@{/trocas/propor(livroDesejadoId=${livro.id})}">Propor Troca</a>
     
+    <p><strong>Descrição:</strong> <span th:text="${livro.descricao}"></span></p>
+    
+    <br>
+
+    <div sec:authorize="isAuthenticated()" th:if="${livro.dono.id != usuarioLogadoId}">
+        <a th:href="@{/trocas/propor(livroDesejadoId=${livro.id})}">Propor Troca</a>
+    </div>
+
+    <div sec:authorize="isAuthenticated()" th:if="${livro.dono.id == usuarioLogadoId}">
+        <p><strong>Este livro pertence a você.</strong></p>
+        </div>
+    
+    <br>
     <a th:href="@{/livros}">Voltar à lista</a>
 </body>
 </html>
