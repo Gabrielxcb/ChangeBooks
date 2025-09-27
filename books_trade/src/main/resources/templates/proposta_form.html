@@ -17,12 +17,14 @@
 
         <div>
             <label for="livroOfertadoId">Qual livro você quer oferecer em troca?</label>
+            
             <select th:field="*{livroOfertadoId}" id="livroOfertadoId">
                 <option value="">-- Selecione um livro --</option>
-                <option th:each="livro : ${todosLivros}"
+                <option th:each="livro : ${livrosOfertados}"
                         th:value="${livro.id}"
                         th:text="${livro.titulo}"></option>
             </select>
+            <span style="color:red" th:if="${#fields.hasErrors('livroOfertadoId')}" th:errors="*{livroOfertadoId}"></span>
         </div>
 
         <button type="submit">Enviar Proposta</button>

@@ -2,7 +2,9 @@ package com.edu.iff.ccc.books_trade.entities;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +13,8 @@ import java.util.List;
 @DiscriminatorValue("COMUM")
 public class UsuarioComum extends Usuario {
 
-    @OneToMany(mappedBy = "dono")
+    // RELAÇÃO ATUALIZADA AQUI
+    @OneToMany(mappedBy = "dono", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Livro> livrosCadastrados;
 
     @OneToMany(mappedBy = "remetente")

@@ -23,7 +23,13 @@
                 <td th:text="${proposta.livroDesejado.titulo}"></td>
                 <td th:text="${proposta.status}"></td>
                 <td>
-                    <a href="#">Ver Detalhes</a>
+                    <div th:if="${proposta.destinatario.id == usuarioLogadoId and proposta.status.name() == 'PENDENTE'}">
+                        <button>Aceitar</button>
+                        <button>Recusar</button>
+                    </div>
+                    <div th:if="${proposta.remetente.id == usuarioLogadoId}">
+                <span>(Proposta enviada por você)</span>
+                    </div>
                 </td>
             </tr>
         </tbody>

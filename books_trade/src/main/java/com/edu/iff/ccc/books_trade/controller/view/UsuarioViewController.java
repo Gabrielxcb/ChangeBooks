@@ -30,32 +30,30 @@ public class UsuarioViewController {
         return "usuarios";
     }
 
-    // NOVO: Método para exibir o formulário de um novo usuário
     @GetMapping("/novo")
     public String novoUsuarioForm(Model model) {
         model.addAttribute("usuarioDTO", new UsuarioDTO());
         return "usuario_form";
     }
 
-    // NOVO: Método para salvar um usuário (novo ou editado)
     @PostMapping
     public String salvarUsuario(@Valid @ModelAttribute("usuarioDTO") UsuarioDTO usuarioDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "usuario_form";
         }
 
-        // Converte o DTO para a entidade
         UsuarioComum usuario = new UsuarioComum();
-        // Se for uma edição, o ID virá no DTO
         if (usuarioDTO.getId() != null) {
             usuario.setId(usuarioDTO.getId());
         }
         usuario.setNome(usuarioDTO.getNome());
         usuario.setEmail(usuarioDTO.getEmail());
-        usuario.setSenha(usuarioDTO.getSenha()); // Lembre-se que o ideal é criptografar a senha no service
+        usuario.setSenha(usuarioDTO.getSenha());
         usuario.setTelefone(usuarioDTO.getTelefone());
 
-        usuarioService.saveUsuario(usuario);
+        // ÚNICA MUDANÇA NESTA CLASSE: Chamando o método correto.
+        usuarioService.criarNovoUsuario(usuario);
+
         return "redirect:/usuarios";
     }
 
@@ -70,20 +68,16 @@ public class UsuarioViewController {
         }
     }
 
-    // ALTERADO: Agora envia um DTO para o formulário de edição
     @GetMapping("/{id}/editar")
     public String editarPerfilUsuario(@PathVariable("id") Long id, Model model) {
         Optional<Usuario> usuarioOptional = usuarioService.findUsuarioById(id);
         if (usuarioOptional.isPresent()) {
             Usuario usuario = usuarioOptional.get();
-
-            // Converte a entidade para DTO
             UsuarioDTO usuarioDTO = new UsuarioDTO();
             usuarioDTO.setId(usuario.getId());
             usuarioDTO.setNome(usuario.getNome());
             usuarioDTO.setEmail(usuario.getEmail());
             usuarioDTO.setTelefone(usuario.getTelefone());
-            // Intencionalmente não enviamos a senha de volta para o formulário
 
             model.addAttribute("usuarioDTO", usuarioDTO);
             return "usuario_form";

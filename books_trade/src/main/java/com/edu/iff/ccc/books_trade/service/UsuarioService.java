@@ -20,10 +20,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UsuarioService implements UserDetailsService { // Adiciona o 'implements'
+public class UsuarioService implements UserDetailsService {
 
     private final UsuarioRepository usuarioRepository;
-    private final PasswordEncoder passwordEncoder; // Injeta o PasswordEncoder
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
@@ -31,7 +31,6 @@ public class UsuarioService implements UserDetailsService { // Adiciona o 'imple
         this.passwordEncoder = passwordEncoder;
     }
 
-    // Método para o Spring Security carregar o usuário
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -43,14 +42,26 @@ public class UsuarioService implements UserDetailsService { // Adiciona o 'imple
 
         return new User(usuario.getEmail(), usuario.getSenha(), authorities);
     }
-
+    
+    // MÉTODO RENOMEADO E ESPECÍFICO PARA NOVOS USUÁRIOS
     @Transactional
-    public Usuario saveUsuario(Usuario usuario) {
-        // CRIPTOGRAFA A SENHA ANTES DE SALVAR!
+    public Usuario criarNovoUsuario(Usuario usuario) {
+        // Este método SEMPRE criptografa a senha, pois é para um novo cadastro.
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         return usuarioRepository.save(usuario);
     }
 
+    // NOVO MÉTODO PARA ATUALIZAR USUÁRIOS EXISTENTES
+    @Transactional
+    public Usuario updateUsuario(Usuario usuario) {
+        // Este método NÃO mexe na senha. Ele apenas salva outras alterações (nome, telefone, etc.).
+        return usuarioRepository.save(usuario);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Usuario> findUsuarioByEmail(String email) {
+        return usuarioRepository.findByEmail(email);
+    }
 
     @Transactional(readOnly = true)
     public Optional<Usuario> findUsuarioById(Long id) {
@@ -65,10 +76,5 @@ public class UsuarioService implements UserDetailsService { // Adiciona o 'imple
     @Transactional(readOnly = true)
     public List<Usuario> findAllUsuarios() {
         return usuarioRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<Usuario> findUsuarioByEmail(String email) {
-    return usuarioRepository.findByEmail(email);
     }
 }

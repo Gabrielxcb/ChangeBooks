@@ -103,4 +103,5 @@ public class PropostaTrocaService {
     public List<PropostaTroca> findAll() {
     return propostaRepository.findAll();
     }
+
 }

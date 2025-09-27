@@ -5,61 +5,50 @@ import com.edu.iff.ccc.books_trade.entities.Livro;
 import com.edu.iff.ccc.books_trade.entities.Usuario;
 import com.edu.iff.ccc.books_trade.entities.UsuarioComum;
 import com.edu.iff.ccc.books_trade.service.LivroService;
-import com.edu.iff.ccc.books_trade.service.UsuarioService; // <-- Importante
+import com.edu.iff.ccc.books_trade.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.lang.Nullable;
+
 import java.security.Principal;
-import java.util.List; // <-- Importante
+import java.util.List;
 
 @Controller
 @RequestMapping("/livros")
 public class LivroViewController {
 
     private final LivroService livroService;
-    // 1. DECLARAÇÃO DO CAMPO QUE ESTAVA FALTANDO
-    private final UsuarioService usuarioService; 
+    private final UsuarioService usuarioService;
 
-    // 2. CONSTRUTOR ATUALIZADO PARA RECEBER O USUARIOSERVICE
     public LivroViewController(LivroService livroService, UsuarioService usuarioService) {
         this.livroService = livroService;
         this.usuarioService = usuarioService;
     }
 
     @GetMapping
-public String listarLivros(Model model, @Nullable Principal principal) {
-    // Se o usuário não estiver logado, mostramos todos os livros
-    if (principal == null) {
-        model.addAttribute("outrosLivros", livroService.findAllLivros());
+    public String listarLivros(Model model, Principal principal) {
+        if (principal == null) {
+            model.addAttribute("outrosLivros", livroService.findAllLivros());
+            return "livros";
+        }
+        Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        Long meuId = usuarioLogado.getId();
+        List<Livro> meusLivros = livroService.findLivrosByDonoId(meuId);
+        List<Livro> outrosLivros = livroService.findLivrosDisponiveis(meuId);
+        model.addAttribute("meusLivros", meusLivros);
+        model.addAttribute("outrosLivros", outrosLivros);
         return "livros";
     }
 
-    // Se estiver logado, separamos as listas
-    Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName())
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-    Long meuId = usuarioLogado.getId();
-
-    List<Livro> meusLivros = livroService.findLivrosByDonoId(meuId);
-    List<Livro> outrosLivros = livroService.findLivrosDisponiveis(meuId);
-
-    model.addAttribute("meusLivros", meusLivros);
-    model.addAttribute("outrosLivros", outrosLivros);
-
-    return "livros"; // livros.html
-}
-
     @GetMapping("/novo")
     public String novoLivroForm(Model model, Principal principal) {
-        // Usa o serviço (UsuarioService) para encontrar o usuário, não o repositório
         Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
         LivroDTO livroDTO = new LivroDTO();
         livroDTO.setDonoId(usuarioLogado.getId());
-
         model.addAttribute("livroDTO", livroDTO);
         return "livro_form";
     }
@@ -67,21 +56,11 @@ public String listarLivros(Model model, @Nullable Principal principal) {
     @PostMapping
     public String salvarLivro(@Valid @ModelAttribute("livroDTO") LivroDTO livroDTO,
                               BindingResult bindingResult, Model model) {
-
         if (bindingResult.hasErrors()) {
-            // Se houver erros, precisamos reenviar a lista de usuários para o formulário
-            List<UsuarioComum> todosOsUsuarios = usuarioService.findAllUsuariosComuns();
-            model.addAttribute("usuarios", todosOsUsuarios);
             return "livro_form";
         }
-
-        Usuario dono = usuarioService.findUsuarioById(livroDTO.getDonoId())
+        UsuarioComum donoComum = (UsuarioComum) usuarioService.findUsuarioById(livroDTO.getDonoId())
                 .orElseThrow(() -> new IllegalArgumentException("Dono do livro inválido. ID: " + livroDTO.getDonoId()));
-        
-        if(!(dono instanceof UsuarioComum)){
-            throw new ClassCastException("O dono do livro deve ser um usuário comum.");
-        }
-
         Livro livro = new Livro();
         livro.setTitulo(livroDTO.getTitulo());
         livro.setAutor(livroDTO.getAutor());
@@ -89,10 +68,11 @@ public String listarLivros(Model model, @Nullable Principal principal) {
         livro.setDescricao(livroDTO.getDescricao());
         livro.setAnoPublicacao(livroDTO.getAnoPublicacao());
         livro.setEstadoConservacao(livroDTO.getEstadoConservacao());
-        livro.setDono((UsuarioComum) dono);
-
-        livroService.saveLivro(livro);
-
+        donoComum.addLivro(livro);
+        
+        // CORREÇÃO APLICADA AQUI:
+        usuarioService.updateUsuario(donoComum); 
+        
         return "redirect:/livros";
     }
 
@@ -100,7 +80,7 @@ public String listarLivros(Model model, @Nullable Principal principal) {
     public String detalhesLivro(@PathVariable("id") Long id, Model model) {
         Livro livro = livroService.findLivroById(id);
         model.addAttribute("livro", livro);
-        return "livro"; // livro.html
+        return "livro";
     }
 }
 
