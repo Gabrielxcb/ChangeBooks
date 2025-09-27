@@ -11,7 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.lang.Nullable;
+import java.security.Principal;
 import java.util.List; // <-- Importante
 
 @Controller
@@ -29,17 +30,37 @@ public class LivroViewController {
     }
 
     @GetMapping
-    public String listarLivros(Model model) {
-        model.addAttribute("livros", livroService.findAllLivros());
-        return "livros"; // livros.html
+public String listarLivros(Model model, @Nullable Principal principal) {
+    // Se o usuário não estiver logado, mostramos todos os livros
+    if (principal == null) {
+        model.addAttribute("outrosLivros", livroService.findAllLivros());
+        return "livros";
     }
 
+    // Se estiver logado, separamos as listas
+    Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName())
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    Long meuId = usuarioLogado.getId();
+
+    List<Livro> meusLivros = livroService.findLivrosByDonoId(meuId);
+    List<Livro> outrosLivros = livroService.findLivrosDisponiveis(meuId);
+
+    model.addAttribute("meusLivros", meusLivros);
+    model.addAttribute("outrosLivros", outrosLivros);
+
+    return "livros"; // livros.html
+}
+
     @GetMapping("/novo")
-    public String novoLivroForm(Model model) {
-        // Agora o 'usuarioService' é conhecido e o erro desaparecerá
-        List<UsuarioComum> todosOsUsuarios = usuarioService.findAllUsuariosComuns();
-        model.addAttribute("livroDTO", new LivroDTO());
-        model.addAttribute("usuarios", todosOsUsuarios);
+    public String novoLivroForm(Model model, Principal principal) {
+        // Usa o serviço (UsuarioService) para encontrar o usuário, não o repositório
+        Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        LivroDTO livroDTO = new LivroDTO();
+        livroDTO.setDonoId(usuarioLogado.getId());
+
+        model.addAttribute("livroDTO", livroDTO);
         return "livro_form";
     }
 

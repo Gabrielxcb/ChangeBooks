@@ -3,6 +3,8 @@ package com.edu.iff.ccc.books_trade.entities;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -50,5 +52,13 @@ public class UsuarioComum extends Usuario {
 
     public void setPropostasRecebidas(List<PropostaTroca> propostasRecebidas) {
         this.propostasRecebidas = propostasRecebidas;
+    }
+
+    public void addLivro(Livro livro) {
+        if (this.livrosCadastrados == null) {
+            this.livrosCadastrados = new ArrayList<>();
+        }
+        this.livrosCadastrados.add(livro);
+        livro.setDono(this);
     }
 }

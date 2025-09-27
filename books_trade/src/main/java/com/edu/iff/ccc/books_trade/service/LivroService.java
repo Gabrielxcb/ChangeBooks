@@ -43,4 +43,14 @@ public class LivroService {
         }
         livroRepository.deleteById(id);
     }
+
+    @Transactional(readOnly = true)
+    public List<Livro> findLivrosByDonoId(Long donoId) {
+        return livroRepository.findByDonoId(donoId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Livro> findLivrosDisponiveis(Long meuId) {
+        return livroRepository.findByDonoIdNot(meuId);
+    }
 }

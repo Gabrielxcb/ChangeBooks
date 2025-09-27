@@ -5,22 +5,16 @@
     <h2>Fazer Proposta de Troca</h2>
     <p>Você deseja o livro: <strong th:text="${livroDesejado.titulo}"></strong></p>
     <p>Que pertence a: <strong th:text="${livroDesejado.dono.nome}"></strong></p>
+    <p>Sua proposta será enviada como: <strong th:text="${remetente.nome}"></strong></p>
     <hr>
     
     <form th:action="@{/trocas}" th:object="${propostaDTO}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
         <input type="hidden" th:field="*{livroDesejadoId}" />
         <input type="hidden" th:field="*{destinatarioId}" />
+        <input type="hidden" th:field="*{remetenteId}" />
 
-        <div>
-            <label for="remetenteId">Quem está propondo? (Você):</label>
-            <select th:field="*{remetenteId}" id="remetenteId">
-                <option value="">-- Selecione seu usuário --</option>
-                <option th:each="usuario : ${todosUsuarios}"
-                        th:value="${usuario.id}"
-                        th:text="${usuario.nome}"></option>
-            </select>
-        </div>
-        
         <div>
             <label for="livroOfertadoId">Qual livro você quer oferecer em troca?</label>
             <select th:field="*{livroOfertadoId}" id="livroOfertadoId">

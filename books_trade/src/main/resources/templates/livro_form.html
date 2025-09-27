@@ -3,19 +3,11 @@
       th:replace="~{layout :: layout(~{::body})}">
 <body>
     <h2>Cadastrar Livro</h2>
-    
+
     <form th:action="@{/livros}" th:object="${livroDTO}" method="post">
-        
-        <div>
-            <label for="donoId">Dono do Livro:</label>
-            <select th:field="*{donoId}" id="donoId">
-                <option value="">-- Selecione um Dono --</option>
-                <option th:each="usuario : ${usuarios}"
-                        th:value="${usuario.id}"
-                        th:text="${usuario.nome}"></option>
-            </select>
-            <span style="color:red" th:if="${#fields.hasErrors('donoId')}" th:errors="*{donoId}"></span>
-        </div>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <input type="hidden" th:field="*{donoId}" />
 
         <div>
             <label for="titulo">Título:</label>
