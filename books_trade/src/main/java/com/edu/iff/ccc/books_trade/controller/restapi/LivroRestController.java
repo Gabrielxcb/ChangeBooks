@@ -12,12 +12,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/livros")
+@Tag(name = "Livros", description = "Endpoints para gerenciamento de livros") // Agrupa todos os endpoints sob "Livros"
 public class LivroRestController {
 
     @Autowired
@@ -28,6 +34,8 @@ public class LivroRestController {
 
     // Endpoint para LER (GET) todos os livros
     @GetMapping
+    @Operation(summary = "Lista todos os livros disponíveis")
+    @ApiResponse(responseCode = "200", description = "Lista de livros retornada com sucesso")
     public ResponseEntity<List<LivroDTO>> listarTodos() {
         List<Livro> livros = livroService.findAllLivros();
         // Convertendo a lista de Entidades para uma lista de DTOs
@@ -51,6 +59,11 @@ public class LivroRestController {
 
     // Endpoint para LER (GET) um livro específico por ID
     @GetMapping("/{id}")
+    @Operation(summary = "Busca um livro por seu ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Livro encontrado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Livro não encontrado com o ID fornecido")
+    })
     public ResponseEntity<LivroDTO> buscarPorId(@PathVariable("id") Long id) {
         // MUDANÇA: Busca direta. @ControllerAdvice trata o "não encontrado".
         Livro livro = livroService.findLivroById(id);
@@ -62,6 +75,11 @@ public class LivroRestController {
 
     // Endpoint para CRIAR (POST) um novo livro
     @PostMapping
+    @Operation(summary = "Cadastra um novo livro")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Livro cadastrado com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro de validação nos dados do livro")
+    })
     public ResponseEntity<LivroDTO> criar(@Valid @RequestBody LivroDTO livroDTO, UriComponentsBuilder uriBuilder) {
         // MUDANÇA: Busca direta. @ControllerAdvice trata o "não encontrado".
         UsuarioComum dono = (UsuarioComum) usuarioService.findUsuarioById(livroDTO.getDonoId());
@@ -78,6 +96,12 @@ public class LivroRestController {
     
     // Endpoint para ATUALIZAR (PUT) um livro existente
     @PutMapping("/{id}")
+    @Operation(summary = "Atualiza um livro existente")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Livro atualizado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Livro não encontrado com o ID fornecido"),
+        @ApiResponse(responseCode = "400", description = "Erro de validação nos dados do livro")
+    })
     public ResponseEntity<LivroDTO> atualizar(@PathVariable("id") Long id, @Valid @RequestBody LivroDTO livroDTO) {
         // MUDANÇA: Busca direta. @ControllerAdvice trata o "não encontrado".
         Usuario dono = usuarioService.findUsuarioById(livroDTO.getDonoId());
@@ -92,6 +116,11 @@ public class LivroRestController {
     
     // Endpoint para DELETAR (DELETE) um livro
     @DeleteMapping("/{id}")
+    @Operation(summary = "Exclui um livro por seu ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Livro excluído com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Livro não encontrado com o ID fornecido")
+    })
     public ResponseEntity<Void> deletar(@PathVariable("id") Long id) {
         // MUDANÇA: Busca direta. @ControllerAdvice trata o "não encontrado".
         Livro livro = livroService.findLivroById(id);

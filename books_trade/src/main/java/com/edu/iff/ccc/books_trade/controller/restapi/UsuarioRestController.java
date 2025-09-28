@@ -10,13 +10,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/usuarios")
+@Tag(name = "Usuários", description = "Endpoints para gerenciamento de usuários")
 public class UsuarioRestController {
 
     @Autowired
@@ -25,6 +30,8 @@ public class UsuarioRestController {
     // GET para listar todos os usuários
     // CUIDADO: Em produção, este endpoint deveria ser protegido para admins.
     @GetMapping
+    @Operation(summary = "Lista todos os usuários")
+    @ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso")
     public ResponseEntity<List<UsuarioDTO>> listarTodos() {
         List<Usuario> usuarios = usuarioService.findAllUsuarios();
         List<UsuarioDTO> usuariosDTO = new ArrayList<>();
@@ -42,6 +49,11 @@ public class UsuarioRestController {
 
     // GET para buscar um usuário por ID
     @GetMapping("/{id}")
+    @Operation(summary = "Busca um usuário por seu ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuário encontrado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Usuário não encontrado com o ID fornecido")
+    })
     public ResponseEntity<UsuarioDTO> buscarPorId(@PathVariable("id") Long id) {
         // MUDANÇA: A busca agora é direta.
         // Se o usuário não for encontrado, o serviço lança a exceção e o @ControllerAdvice a captura,
@@ -59,6 +71,11 @@ public class UsuarioRestController {
 
     // POST para criar um novo usuário (cadastro)
     @PostMapping
+    @Operation(summary = "Cadastra um novo usuário")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Usuário cadastrado com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro de validação ou e-mail já existente")
+    })
     public ResponseEntity<UsuarioDTO> criar(@Valid @RequestBody UsuarioDTO usuarioDTO, UriComponentsBuilder uriBuilder) {
         UsuarioComum usuario = new UsuarioComum();
         usuario.setNome(usuarioDTO.getNome());
@@ -77,6 +94,12 @@ public class UsuarioRestController {
 
     // PUT para atualizar um usuário
     @PutMapping("/{id}")
+    @Operation(summary = "Atualiza um usuário existente")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Usuário não encontrado com o ID fornecido"),
+        @ApiResponse(responseCode = "400", description = "Erro de validação nos dados do usuário")
+    })
     public ResponseEntity<UsuarioDTO> atualizar(@PathVariable("id") Long id, @Valid @RequestBody UsuarioDTO usuarioDTO) {
         // MUDANÇA: A busca agora é direta.
         // O @ControllerAdvice também funcionará aqui se o ID for inválido.

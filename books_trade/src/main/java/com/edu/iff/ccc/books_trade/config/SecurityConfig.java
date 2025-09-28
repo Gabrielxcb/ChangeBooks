@@ -40,6 +40,8 @@ public class SecurityConfig {
     public SecurityFilterChain webSecurityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authorize -> authorize
+                // --- ADICIONADO PARA LIBERAR O SWAGGER ---
+                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 // Regras para a aplicação web (exatamente como estavam antes)
                 .requestMatchers(HttpMethod.GET, "/", "/livros", "/livros/{id}").permitAll()
                 .requestMatchers("/auth/**", "/css/**", "/js/**", "/images/**").permitAll()
