@@ -4,6 +4,7 @@ import com.edu.iff.ccc.books_trade.dto.LivroDTO;
 import com.edu.iff.ccc.books_trade.entities.Livro;
 import com.edu.iff.ccc.books_trade.entities.Usuario;
 import com.edu.iff.ccc.books_trade.entities.UsuarioComum;
+import com.edu.iff.ccc.books_trade.exceptions.LivroNaoEncontradoException;
 import com.edu.iff.ccc.books_trade.repository.LivroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,8 +31,9 @@ public class LivroService {
 
     @Transactional(readOnly = true)
     public Livro findLivroById(Long id) {
+        // MUDANÇA 2: Lança a exceção customizada
         return livroRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Livro não encontrado com o ID: " + id));
+                .orElseThrow(() -> new LivroNaoEncontradoException("Livro não encontrado com o ID: " + id));
     }
     
     @Transactional(readOnly = true)

@@ -34,49 +34,28 @@ public class TrocaViewController {
 
     @GetMapping
     public String listarTrocas(Model model, Principal principal) {
-        // 1. Identifica o usuário logado
-        Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName())
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
-    
-        // 2. Busca no serviço apenas as propostas relacionadas a este usuário
+        Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName());
         List<PropostaTroca> minhasPropostas = propostaService.findPropostasByUsuarioId(usuarioLogado.getId());
-    
-        // 3. Envia a lista filtrada para o template
         model.addAttribute("propostas", minhasPropostas);
-        model.addAttribute("usuarioLogadoId", usuarioLogado.getId()); // Enviando o ID do usuário logado
-    
+        model.addAttribute("usuarioLogadoId", usuarioLogado.getId());
         return "trocas";
     }
 
     @GetMapping("/propor")
     public String proporTrocaForm(@RequestParam("livroDesejadoId") Long livroDesejadoId, Model model, Principal principal) {
-
-        // 1. Busca o usuário logado (remetente). Graças ao FetchType.EAGER, a lista de livros dele já vem junto.
-        UsuarioComum remetente = (UsuarioComum) usuarioService.findUsuarioByEmail(principal.getName())
-            .orElseThrow(() -> new RuntimeException("Remetente não encontrado."));
-
-        // 2. Busca o livro desejado
+        UsuarioComum remetente = (UsuarioComum) usuarioService.findUsuarioByEmail(principal.getName());
         Livro livroDesejado = livroService.findLivroById(livroDesejadoId);
 
-        // 3. Pega a lista de livros DIRETAMENTE do objeto remetente.
         List<Livro> livrosOfertados = livroService.findLivrosByDonoId(remetente.getId());
 
-        // --- PASSO DE DEBUG PARA TER CERTEZA ---
-        // Adicione esta linha temporariamente para ver no console o que está acontecendo.
-        System.out.println("DEBUG: Encontrados " + (livrosOfertados != null ? livrosOfertados.size() : 0) + " livros para o usuário " + remetente.getNome());
-        // -----------------------------------------
-
-        // 4. Preenche o DTO e envia os dados para o template
         PropostaTrocaDTO propostaDTO = new PropostaTrocaDTO();
         propostaDTO.setLivroDesejadoId(livroDesejado.getId());
         propostaDTO.setDestinatarioId(livroDesejado.getDono().getId());
         propostaDTO.setRemetenteId(remetente.getId());
-
         model.addAttribute("propostaDTO", propostaDTO);
         model.addAttribute("livroDesejado", livroDesejado);
         model.addAttribute("remetente", remetente);
         model.addAttribute("livrosOfertados", livrosOfertados);
-    
         return "proposta_form";
     }
 
@@ -88,7 +67,6 @@ public class TrocaViewController {
             propostaDTO.getRemetenteId(),
             propostaDTO.getDestinatarioId()
         );
-        
         return "redirect:/trocas";
     }
 
@@ -102,6 +80,13 @@ public class TrocaViewController {
     public String recusarProposta(@PathVariable("id") Long propostaId) {
         propostaService.recusarProposta(propostaId);
         return "redirect:/trocas";
+    }
+
+    // Nenhuma mudança aqui era estritamente necessária, mas revisada por segurança.
+    @GetMapping("/{id}")
+    public String detalhesTroca(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("trocaId", id);
+        return "troca"; 
     }
 }
 

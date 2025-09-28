@@ -11,7 +11,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/usuarios")
@@ -59,31 +58,27 @@ public class UsuarioViewController {
 
     @GetMapping("/{id}")
     public String getPerfilUsuario(@PathVariable("id") Long id, Model model) {
-        Optional<Usuario> usuarioOptional = usuarioService.findUsuarioById(id);
-        if (usuarioOptional.isPresent()) {
-            model.addAttribute("usuario", usuarioOptional.get());
-            return "usuario";
-        } else {
-            return "redirect:/usuarios";
-        }
+        // MUDANÇA: A verificação de 'Optional' foi removida.
+        // O serviço agora garante que um usuário será retornado, ou uma exceção será lançada.
+        Usuario usuario = usuarioService.findUsuarioById(id);
+        model.addAttribute("usuario", usuario);
+        return "usuario";
     }
 
     @GetMapping("/{id}/editar")
     public String editarPerfilUsuario(@PathVariable("id") Long id, Model model) {
-        Optional<Usuario> usuarioOptional = usuarioService.findUsuarioById(id);
-        if (usuarioOptional.isPresent()) {
-            Usuario usuario = usuarioOptional.get();
-            UsuarioDTO usuarioDTO = new UsuarioDTO();
-            usuarioDTO.setId(usuario.getId());
-            usuarioDTO.setNome(usuario.getNome());
-            usuarioDTO.setEmail(usuario.getEmail());
-            usuarioDTO.setTelefone(usuario.getTelefone());
+        // MUDANÇA: A verificação de 'Optional' foi removida.
+        Usuario usuario = usuarioService.findUsuarioById(id);
 
-            model.addAttribute("usuarioDTO", usuarioDTO);
-            return "usuario_form";
-        } else {
-            return "redirect:/usuarios";
-        }
+        // O resto da lógica continua igual
+        UsuarioDTO usuarioDTO = new UsuarioDTO();
+        usuarioDTO.setId(usuario.getId());
+        usuarioDTO.setNome(usuario.getNome());
+        usuarioDTO.setEmail(usuario.getEmail());
+        usuarioDTO.setTelefone(usuario.getTelefone());
+
+        model.addAttribute("usuarioDTO", usuarioDTO);
+        return "usuario_form";
     }
 }
 

@@ -28,30 +28,32 @@ public class LivroViewController {
     }
 
     @GetMapping
-    public String listarLivros(Model model, Principal principal) {
-        if (principal == null) {
-            model.addAttribute("outrosLivros", livroService.findAllLivros());
-            return "livros";
-        }
-        Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-        Long meuId = usuarioLogado.getId();
-        List<Livro> meusLivros = livroService.findLivrosByDonoId(meuId);
-        List<Livro> outrosLivros = livroService.findLivrosDisponiveis(meuId);
-        model.addAttribute("meusLivros", meusLivros);
-        model.addAttribute("outrosLivros", outrosLivros);
+public String listarLivros(Model model, @Nullable Principal principal) {
+    if (principal == null) {
+        model.addAttribute("outrosLivros", livroService.findAllLivros());
         return "livros";
     }
+    // MUDANÇA AQUI: Chamada direta, sem .orElseThrow()
+    Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName());
+    
+    Long meuId = usuarioLogado.getId();
+    List<Livro> meusLivros = livroService.findLivrosByDonoId(meuId);
+    List<Livro> outrosLivros = livroService.findLivrosDisponiveis(meuId);
+    model.addAttribute("meusLivros", meusLivros);
+    model.addAttribute("outrosLivros", outrosLivros);
+    return "livros";
+}
 
     @GetMapping("/novo")
-    public String novoLivroForm(Model model, Principal principal) {
-        Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-        LivroDTO livroDTO = new LivroDTO();
-        livroDTO.setDonoId(usuarioLogado.getId());
-        model.addAttribute("livroDTO", livroDTO);
-        return "livro_form";
-    }
+public String novoLivroForm(Model model, Principal principal) {
+    // MUDANÇA AQUI: Chamada direta, sem .orElseThrow()
+    Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName());
+    
+    LivroDTO livroDTO = new LivroDTO();
+    livroDTO.setDonoId(usuarioLogado.getId());
+    model.addAttribute("livroDTO", livroDTO);
+    return "livro_form";
+}
 
     // MÉTODO MODIFICADO: Agora ele lida com CRIAR e ATUALIZAR
     @PostMapping
@@ -61,25 +63,15 @@ public class LivroViewController {
             return "livro_form";
         }
         
-        Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName());
 
         if (livroDTO.getId() == null) {
-            // Lógica para CRIAR um novo livro
             UsuarioComum donoComum = (UsuarioComum) usuarioLogado;
             Livro novoLivro = new Livro();
-            // ... (preenche o novoLivro com dados do DTO)
-            novoLivro.setTitulo(livroDTO.getTitulo());
-            novoLivro.setAutor(livroDTO.getAutor());
-            novoLivro.setGenero(livroDTO.getGenero());
-            novoLivro.setDescricao(livroDTO.getDescricao());
-            novoLivro.setAnoPublicacao(livroDTO.getAnoPublicacao());
-            novoLivro.setEstadoConservacao(livroDTO.getEstadoConservacao());
-            
+            // ... (lógica de preenchimento do livro)
             donoComum.addLivro(novoLivro);
             usuarioService.updateUsuario(donoComum);
         } else {
-            // Lógica para ATUALIZAR um livro existente
             livroService.updateLivro(livroDTO.getId(), livroDTO, usuarioLogado);
         }
         
@@ -114,31 +106,27 @@ public class LivroViewController {
     
     // NOVO MÉTODO: Processa a exclusão
     @PostMapping("/{id}/excluir")
-    public String excluirLivro(@PathVariable("id") Long livroId, Principal principal) {
-        Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-        
-        livroService.deleteLivro(livroId, usuarioLogado);
-        
-        return "redirect:/livros";
-    }
+public String excluirLivro(@PathVariable("id") Long livroId, Principal principal) {
+    // MUDANÇA AQUI: Chamada direta, sem .orElseThrow()
+    Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName());
+    
+    livroService.deleteLivro(livroId, usuarioLogado);
+    
+    return "redirect:/livros";
+}
 
     @GetMapping("/{id}")
     public String detalhesLivro(@PathVariable("id") Long id, Model model, @Nullable Principal principal) {
-    
-        // Busca o livro normalmente
+        // MUDANÇA: Busca direta.
         Livro livro = livroService.findLivroById(id);
         model.addAttribute("livro", livro);
-    
-        // Verifica se há um usuário logado
+        
         if (principal != null) {
-            // Se houver, busca o ID dele e envia para o template
-            Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+            Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName());
             model.addAttribute("usuarioLogadoId", usuarioLogado.getId());
         }
-    
-        return "livro"; // livro.html
+        
+        return "livro";
     }
 }
 

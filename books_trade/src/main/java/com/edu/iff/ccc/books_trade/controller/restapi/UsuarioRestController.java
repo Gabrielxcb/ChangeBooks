@@ -43,11 +43,11 @@ public class UsuarioRestController {
     // GET para buscar um usuário por ID
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioDTO> buscarPorId(@PathVariable("id") Long id) {
-        Optional<Usuario> usuarioOpt = usuarioService.findUsuarioById(id);
-        if (usuarioOpt.isEmpty()) {
-            return ResponseEntity.notFound().build(); // Retorna 404 se não encontrar
-        }
-        Usuario usuario = usuarioOpt.get();
+        // MUDANÇA: A busca agora é direta.
+        // Se o usuário não for encontrado, o serviço lança a exceção e o @ControllerAdvice a captura,
+        // retornando um 404 Not Found com JSON automaticamente.
+        Usuario usuario = usuarioService.findUsuarioById(id);
+        
         UsuarioDTO dto = new UsuarioDTO();
         dto.setId(usuario.getId());
         dto.setNome(usuario.getNome());
@@ -78,15 +78,13 @@ public class UsuarioRestController {
     // PUT para atualizar um usuário
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioDTO> atualizar(@PathVariable("id") Long id, @Valid @RequestBody UsuarioDTO usuarioDTO) {
-        Optional<Usuario> usuarioOpt = usuarioService.findUsuarioById(id);
-        if (usuarioOpt.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        Usuario usuario = usuarioOpt.get();
+        // MUDANÇA: A busca agora é direta.
+        // O @ControllerAdvice também funcionará aqui se o ID for inválido.
+        Usuario usuario = usuarioService.findUsuarioById(id);
+        
         usuario.setNome(usuarioDTO.getNome());
         usuario.setEmail(usuarioDTO.getEmail());
         usuario.setTelefone(usuarioDTO.getTelefone());
-        // Note que não alteramos a senha aqui. Isso geralmente é feito em um endpoint separado.
 
         Usuario usuarioAtualizado = usuarioService.updateUsuario(usuario);
 

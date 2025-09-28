@@ -1,5 +1,8 @@
 package com.edu.iff.ccc.books_trade.service;
 
+import com.edu.iff.ccc.books_trade.exceptions.LivroNaoEncontradoException;
+import com.edu.iff.ccc.books_trade.exceptions.PropostaNaoEncontradaException;
+import com.edu.iff.ccc.books_trade.exceptions.UsuarioNaoEncontradoException;
 import com.edu.iff.ccc.books_trade.entities.Livro;
 import com.edu.iff.ccc.books_trade.entities.PropostaTroca;
 import com.edu.iff.ccc.books_trade.entities.StatusProposta;
@@ -35,15 +38,16 @@ public class PropostaTrocaService {
 
     @Transactional
     public PropostaTroca criarProposta(Long livroOfertadoId, Long livroDesejadoId, Long remetenteId, Long destinatarioId) {
+        // MUDANÇA: Lança exceções específicas em vez de IllegalArgumentException
         Livro livroOfertado = livroRepository.findById(livroOfertadoId)
-                .orElseThrow(() -> new IllegalArgumentException("Livro ofertado inválido."));
+                .orElseThrow(() -> new LivroNaoEncontradoException("Livro ofertado não encontrado. ID: " + livroOfertadoId));
         Livro livroDesejado = livroRepository.findById(livroDesejadoId)
-                .orElseThrow(() -> new IllegalArgumentException("Livro desejado inválido."));
+                .orElseThrow(() -> new LivroNaoEncontradoException("Livro desejado não encontrado. ID: " + livroDesejadoId));
 
         Usuario remetente = usuarioRepository.findById(remetenteId)
-                .orElseThrow(() -> new IllegalArgumentException("Remetente inválido."));
+                .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário remetente não encontrado. ID: " + remetenteId));
         Usuario destinatario = usuarioRepository.findById(destinatarioId)
-                .orElseThrow(() -> new IllegalArgumentException("Destinatário inválido."));
+                .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário destinatário não encontrado. ID: " + destinatarioId));
 
         if (!(remetente instanceof UsuarioComum) || !(destinatario instanceof UsuarioComum)) {
             throw new ClassCastException("Remetente e Destinatário devem ser Usuários Comuns.");
@@ -66,22 +70,21 @@ public class PropostaTrocaService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<PropostaTroca> findPropostaById(Long id) {
-        return propostaRepository.findById(id);
+    public PropostaTroca findPropostaById(Long id) { // MUDANÇA: Retorna o objeto diretamente
+        return propostaRepository.findById(id)
+            .orElseThrow(() -> new PropostaNaoEncontradaException("Proposta não encontrada com o ID: " + id));
     }
 
     @Transactional
     public PropostaTroca aceitarProposta(Long propostaId) {
-        PropostaTroca proposta = propostaRepository.findById(propostaId)
-                .orElseThrow(() -> new IllegalArgumentException("Proposta não encontrada."));
+        // MUDANÇA: Usa o método acima para buscar a proposta, simplificando o código.
+        PropostaTroca proposta = this.findPropostaById(propostaId);
 
         if (proposta.getStatus() == StatusProposta.PENDENTE) {
             proposta.setStatus(StatusProposta.ACEITA);
             
-            // Lógica para criar a Troca (histórico)
             trocaService.criarTroca(proposta);
             
-            // LÓGICA DE NEGÓCIO CRÍTICA: Torna os livros indisponíveis
             Livro livroOfertado = proposta.getLivroOfertado();
             Livro livroDesejado = proposta.getLivroDesejado();
             
@@ -96,11 +99,10 @@ public class PropostaTrocaService {
         throw new IllegalStateException("Esta proposta não pode mais ser aceita.");
     }
 
-    // MÉTODO MODIFICADO
     @Transactional
     public PropostaTroca recusarProposta(Long propostaId) {
-        PropostaTroca proposta = propostaRepository.findById(propostaId)
-                .orElseThrow(() -> new IllegalArgumentException("Proposta não encontrada."));
+        // MUDANÇA: Usa o método acima para buscar a proposta, simplificando o código.
+        PropostaTroca proposta = this.findPropostaById(propostaId);
 
         if (proposta.getStatus() == StatusProposta.PENDENTE) {
             proposta.setStatus(StatusProposta.RECUSADA);
@@ -109,8 +111,9 @@ public class PropostaTrocaService {
         throw new IllegalStateException("Esta proposta não pode mais ser recusada.");
     }
 
+    @Transactional(readOnly = true)
     public List<PropostaTroca> findAll() {
-    return propostaRepository.findAll();
+        return propostaRepository.findAll();
     }
 
 }

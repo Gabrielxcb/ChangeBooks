@@ -1,5 +1,10 @@
 package com.edu.iff.ccc.books_trade.service;
 
+// Adicione os imports das suas exceções customizadas
+import com.edu.iff.ccc.books_trade.exceptions.EmailJaCadastradoException;
+import com.edu.iff.ccc.books_trade.exceptions.EmailNaoEncontradoException;
+import com.edu.iff.ccc.books_trade.exceptions.UsuarioNaoEncontradoException;
+
 import com.edu.iff.ccc.books_trade.entities.Usuario;
 import com.edu.iff.ccc.books_trade.entities.UsuarioComum;
 import com.edu.iff.ccc.books_trade.repository.UsuarioRepository;
@@ -17,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UsuarioService implements UserDetailsService {
@@ -34,6 +38,7 @@ public class UsuarioService implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        // O UsernameNotFoundException é do próprio Spring Security, então o mantemos aqui.
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o email: " + email));
 
@@ -43,29 +48,31 @@ public class UsuarioService implements UserDetailsService {
         return new User(usuario.getEmail(), usuario.getSenha(), authorities);
     }
     
-    // MÉTODO RENOMEADO E ESPECÍFICO PARA NOVOS USUÁRIOS
     @Transactional
     public Usuario criarNovoUsuario(Usuario usuario) {
-        // Este método SEMPRE criptografa a senha, pois é para um novo cadastro.
+        // MUDANÇA 1: Verifica se o e-mail já existe antes de salvar
+        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+            throw new EmailJaCadastradoException("O e-mail '" + usuario.getEmail() + "' já está em uso.");
+        }
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         return usuarioRepository.save(usuario);
     }
 
-    // NOVO MÉTODO PARA ATUALIZAR USUÁRIOS EXISTENTES
     @Transactional
     public Usuario updateUsuario(Usuario usuario) {
-        // Este método NÃO mexe na senha. Ele apenas salva outras alterações (nome, telefone, etc.).
         return usuarioRepository.save(usuario);
     }
 
     @Transactional(readOnly = true)
-    public Optional<Usuario> findUsuarioByEmail(String email) {
-        return usuarioRepository.findByEmail(email);
+    public Usuario findUsuarioByEmail(String email) { // Retorna Usuario diretamente
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new EmailNaoEncontradoException("Usuário não encontrado com o e-mail: " + email));
     }
 
     @Transactional(readOnly = true)
-    public Optional<Usuario> findUsuarioById(Long id) {
-        return usuarioRepository.findById(id);
+    public Usuario findUsuarioById(Long id) { // Retorna Usuario diretamente
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado com o ID: " + id));
     }
 
     @Transactional(readOnly = true)
