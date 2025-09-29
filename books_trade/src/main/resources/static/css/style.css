@@ -74,10 +74,10 @@ h1, h2 {
 
 /* --- RODAPÉ (FOOTER) --- */
 .site-footer {
-    background: #333;
-    color: #fff;
+    /*background: #333;
+    color: #fff;*/
     text-align: center;
-    padding: 0.6rem 0; /* Altura do rodapé (um pouco menor) */
+    padding: 1px 0; /* Altura do rodapé (um pouco menor) */
     width: 100%;
 }
 
@@ -158,3 +158,34 @@ a.button-link:hover {
     background-color: #218838;
     text-decoration: none;
 }
+
+
+/* --- ESTILO PARA A HOME PAGE COM IMAGEM DE FUNDO --- */
+
+.home-background {
+    /* Imagem de exemplo da Unsplash - você pode trocar por outra se preferir */
+    background-image: url('https://distrito.me/wp-content/uploads/2022/05/10-livros-sobre-inovacao-para-ler-em-2022.jpeg');
+    
+    background-size: cover;      /* Faz a imagem cobrir toda a área da div */
+    background-position: center; /* Centraliza a imagem */
+    padding: 100px 40px;         /* Aumenta o espaço interno para dar mais destaque */
+    border-radius: 8px;          /* Arredonda as bordas */
+    text-align: center;
+    color: white;                /* Cor do texto para contrastar com o fundo */
+}
+
+.home-background h2 {
+    color: white; /* Garante que o h2 também seja branco */
+    font-size: 2.8em;
+    font-weight: bold;
+    /* Sombra no texto para garantir a legibilidade sobre qualquer parte da imagem */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8); 
+}
+
+.home-background p {
+    font-size: 1.3em;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* Sombra para legibilidade */
+    max-width: 600px; /* Limita a largura do parágrafo para não ficar muito extenso */
+    margin: 20px auto 0 auto; /* Centraliza o parágrafo */
+}
+
