@@ -28,7 +28,7 @@ public class LivroViewController {
     }
 
     @GetMapping
-public String listarLivros(Model model, @Nullable Principal principal) {
+    public String listarLivros(Model model, @Nullable Principal principal) {
     if (principal == null) {
         model.addAttribute("outrosLivros", livroService.findAllLivros());
         return "livros";
@@ -60,18 +60,29 @@ public String novoLivroForm(Model model, Principal principal) {
     public String salvarOuAtualizarLivro(@Valid @ModelAttribute("livroDTO") LivroDTO livroDTO,
                                          BindingResult bindingResult, Principal principal) {
         if (bindingResult.hasErrors()) {
+            // Se houver erro de validação, retorna ao formulário
             return "livro_form";
         }
         
         Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName());
 
         if (livroDTO.getId() == null) {
+            // --- LÓGICA DE CRIAÇÃO (AGORA CORRIGIDA) ---
             UsuarioComum donoComum = (UsuarioComum) usuarioLogado;
             Livro novoLivro = new Livro();
-            // ... (lógica de preenchimento do livro)
+            
+            // LINHAS ADICIONADAS PARA COPIAR OS DADOS DO DTO
+            novoLivro.setTitulo(livroDTO.getTitulo());
+            novoLivro.setAutor(livroDTO.getAutor());
+            novoLivro.setGenero(livroDTO.getGenero());
+            novoLivro.setDescricao(livroDTO.getDescricao());
+            novoLivro.setAnoPublicacao(livroDTO.getAnoPublicacao());
+            novoLivro.setEstadoConservacao(livroDTO.getEstadoConservacao());
+            
             donoComum.addLivro(novoLivro);
             usuarioService.updateUsuario(donoComum);
         } else {
+            // Lógica para ATUALIZAR um livro existente (esta parte já estava correta)
             livroService.updateLivro(livroDTO.getId(), livroDTO, usuarioLogado);
         }
         
