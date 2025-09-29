@@ -2,25 +2,59 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout :: layout(~{::body})}">
 <body>
-    <h2>Cadastrar Livro</h2>
-    
+    <h2 th:if="${livroDTO.id == null}">Cadastrar Novo Livro</h2>
+    <h2 th:if="${livroDTO.id != null}">Editar Livro</h2>
+
     <form th:action="@{/livros}" th:object="${livroDTO}" method="post">
-        <label for="titulo">Título:</label>
-        <input type="text" th:field="*{titulo}" id="titulo"><br>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-        <label for="autor">Autor:</label>
-        <input type="text" th:field="*{autor}" id="autor"><br>
+        <input type="hidden" th:field="*{id}" />
         
-        <label for="genero">Gênero:</label>
-        <input type="text" th:field="*{genero}" id="genero"><br>
+        <input type="hidden" th:field="*{donoId}" />
 
-        <label for="descricao">Descrição:</label>
-        <input type="text" th:field="*{descricao}" id="descricao"><br>
+        <div>
+            <label for="titulo">Título:</label>
+            <input type="text" th:field="*{titulo}" id="titulo">
+            <span style="color:red" th:if="${#fields.hasErrors('titulo')}" th:errors="*{titulo}"></span>
+        </div>
 
-        <label for="anoPublicacao">Ano de Publicação:</label>
-        <input type="number" th:field="*{anoPublicacao}" id="anoPublicacao"><br>
+        <div>
+            <label for="autor">Autor:</label>
+            <input type="text" th:field="*{autor}" id="autor">
+            <span style="color:red" th:if="${#fields.hasErrors('autor')}" th:errors="*{autor}"></span>
+        </div>
+
+        <div>
+            <label for="genero">Gênero:</label>
+            <input type="text" th:field="*{genero}" id="genero">
+            <span style="color:red" th:if="${#fields.hasErrors('genero')}" th:errors="*{genero}"></span>
+        </div>
+
+        <div>
+            <label for="estadoConservacao">Estado de Conservação:</label>
+            <select th:field="*{estadoConservacao}" id="estadoConservacao">
+                <option value="">-- Selecione --</option>
+                <option value="NOVO">Novo</option>
+                <option value="SEMINOVO">Seminovo</option>
+                <option value="USADO">Usado</option>
+            </select>
+            <span style="color:red" th:if="${#fields.hasErrors('estadoConservacao')}" th:errors="*{estadoConservacao}"></span>
+        </div>
+
+        <div>
+            <label for="descricao">Descrição:</label>
+            <input type="text" th:field="*{descricao}" id="descricao">
+            <span style="color:red" th:if="${#fields.hasErrors('descricao')}" th:errors="*{descricao}"></span>
+        </div>
+
+        <div>
+            <label for="anoPublicacao">Ano de Publicação:</label>
+            <input type="number" th:field="*{anoPublicacao}" id="anoPublicacao">
+            <span style="color:red" th:if="${#fields.hasErrors('anoPublicacao')}" th:errors="*{anoPublicacao}"></span>
+        </div>
 
         <button type="submit">Salvar</button>
+        <a th:href="@{/livros}" style="margin-left: 10px;">Cancelar</a>
     </form>
 </body>
 </html>
