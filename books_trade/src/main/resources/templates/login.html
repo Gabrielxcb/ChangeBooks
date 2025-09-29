@@ -3,8 +3,15 @@
       th:replace="~{auth_layout :: layout(~{::body})}">
 <body>
     <h2>Login</h2>
-    <form th:action="@{/login}" method="post">
-        <label for="username">Usuário:</label>
+    
+    <div th:if="${param.error}" style="color: red;">
+        Email ou senha inválidos.
+    </div>
+
+    <form th:action="@{/auth/login}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <label for="username">Email:</label>
         <input type="text" name="username" id="username"><br>
 
         <label for="password">Senha:</label>
@@ -12,7 +19,8 @@
 
         <button type="submit">Entrar</button>
     </form>
-    <p>Ainda não tem conta? <a th:href="@{/register}">Cadastre-se aqui</a></p>
+    
+    <p>Ainda não tem conta? <a th:href="@{/auth/register}">Cadastre-se aqui</a></p>
 </body>
 </html>
 

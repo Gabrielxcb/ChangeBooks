@@ -1,14 +1,31 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{layout :: layout(~{::body})}">
 <body>
-    <h2>Lista de Livros</h2>
-    <ul>
-        <li th:each="livro : ${livros}">
+    <div sec:authorize="isAuthenticated()" th:if="${not #lists.isEmpty(meusLivros)}">
+        <h2>Meus Livros</h2>
+        <ul>
+            <li th:each="livro : ${meusLivros}">
+                <a th:href="@{|/livros/${livro.id}|}" th:text="${livro.titulo}"></a>
+            </li>
+        </ul>
+        <hr>
+    </div>
+
+    <h2>Livros Disponíveis para Troca</h2>
+    <div th:if="${#lists.isEmpty(outrosLivros)}">
+        <p>Nenhum livro disponível para troca no momento.</p>
+    </div>
+    <ul th:if="${not #lists.isEmpty(outrosLivros)}">
+        <li th:each="livro : ${outrosLivros}">
             <a th:href="@{|/livros/${livro.id}|}" th:text="${livro.titulo}"></a>
+            - <span>Dono: </span> <span th:text="${livro.dono.nome}"></span>
         </li>
     </ul>
-    <a th:href="@{/livros/novo}">Cadastrar novo livro</a>
+
+    <br>
+    <a sec:authorize="isAuthenticated()" th:href="@{/livros/novo}">Cadastrar novo livro</a>
 </body>
 </html>
 

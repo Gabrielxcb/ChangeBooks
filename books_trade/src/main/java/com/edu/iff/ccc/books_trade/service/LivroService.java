@@ -1,47 +1,106 @@
 package com.edu.iff.ccc.books_trade.service;
 
+import com.edu.iff.ccc.books_trade.dto.LivroDTO;
 import com.edu.iff.ccc.books_trade.entities.Livro;
+import com.edu.iff.ccc.books_trade.entities.Usuario;
+import com.edu.iff.ccc.books_trade.entities.UsuarioComum;
+import com.edu.iff.ccc.books_trade.repository.LivroRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LivroService {
 
-    private final List<Livro> livros = new ArrayList<>();
-    private long idCounter = 1;
+    private final LivroRepository livroRepository;
 
-    public void saveLivro(Livro livro) {
-        if (livro.getId() == null) {
-            livro.setId(idCounter++);
-        }
-        livros.add(livro);
-        System.out.println("Livro salvo: " + livro.getTitulo() + " - Autor: " + livro.getAutor());
+    @Autowired
+    public LivroService(LivroRepository livroRepository) {
+        this.livroRepository = livroRepository;
     }
 
+    @Transactional
+    public Livro saveLivro(Livro livro) {
+        return livroRepository.save(livro);
+    }
+
+    @Transactional(readOnly = true)
     public Livro findLivroById(Long id) {
-        return livros.stream()
-                .filter(l -> l.getId().equals(id))
-                .findFirst()
-                .orElse(null);
+        return livroRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Livro não encontrado com o ID: " + id));
     }
-
+    
+    @Transactional(readOnly = true)
     public List<Livro> findAllLivros() {
-        if (livros.isEmpty()) {
-            Livro livro1 = new Livro("Rainha Vermelha", "Victoria Aveyard", "Fantasia", "Usado", null, "Descrição de Rainha Vermelha", 2015);
-            livro1.setId(idCounter++);
-            livros.add(livro1);
-
-            Livro livro2 = new Livro("A Cor Púrpura", "Alice Walker", "Ficção", "Novo", null, "Descrição de A Cor Púrpura", 1982);
-            livro2.setId(idCounter++);
-            livros.add(livro2);
-
-            Livro livro3 = new Livro("1984", "George Orwell", "Distopia", "Semi-novo", null, "Descrição de 1984", 1949);
-            livro3.setId(idCounter++);
-            livros.add(livro3);
-        }
-        return new ArrayList<>(livros);
+        return livroRepository.findAll();
     }
+    
+    @Transactional
+    public void deleteLivroById(Long id) {
+        if (!livroRepository.existsById(id)) {
+            throw new IllegalArgumentException("Livro não encontrado com o ID: " + id);
+        }
+        livroRepository.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Livro> findLivrosByDonoId(Long donoId) {
+        return livroRepository.findByDonoIdAndDisponivelIsTrue(donoId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Livro> findLivrosDisponiveis(Long meuId) {
+        return livroRepository.findByDonoIdNotAndDisponivelIsTrue(meuId);
+    }
+
+    @Transactional
+    public Livro updateLivro(Long livroId, LivroDTO livroDTO, Usuario dono) {
+        // 1. Busca o livro original no banco
+        Livro livro = this.findLivroById(livroId);
+
+        // 2. VERIFICAÇÃO DE SEGURANÇA: Garante que o usuário logado é o dono do livro
+        if (!livro.getDono().getId().equals(dono.getId())) {
+            throw new SecurityException("Você não tem permissão para editar este livro.");
+        }
+
+        // 3. Atualiza os campos do livro com os dados do DTO
+        livro.setTitulo(livroDTO.getTitulo());
+        livro.setAutor(livroDTO.getAutor());
+        livro.setGenero(livroDTO.getGenero());
+        livro.setEstadoConservacao(livroDTO.getEstadoConservacao());
+        livro.setDescricao(livroDTO.getDescricao());
+        livro.setAnoPublicacao(livroDTO.getAnoPublicacao());
+    
+        // 4. Salva o livro atualizado
+        return livroRepository.save(livro);
+    }
+
+    @Transactional
+    public void deleteLivro(Long livroId, Usuario usuarioLogado) {
+        // 1. Busca o livro que será excluído
+        Livro livro = this.findLivroById(livroId);
+
+        // 2. VERIFICAÇÃO DE SEGURANÇA: Garante que o usuário logado é o dono do livro
+        if (!livro.getDono().getId().equals(usuarioLogado.getId())) {
+        throw new SecurityException("Você não tem permissão para excluir este livro.");
+        }
+    
+        // --- LÓGICA CORRETA PARA EXCLUSÃO BIDIRECIONAL ---
+    
+        // 3. Pega a referência do "pai" (o dono do livro)
+        UsuarioComum dono = livro.getDono();
+    
+        // 4. Remove o "filho" (livro) da coleção do "pai"
+        // Esta é a etapa mais importante para quebrar a relação.
+        dono.getLivrosCadastrados().remove(livro);
+    
+        // 5. (Opcional, mas boa prática) Remove a referência do "pai" no "filho"
+        livro.setDono(null);
+    
+        // 6. Agora que os laços foram cortados, podemos deletar o livro com segurança.
+        livroRepository.delete(livro);
+}
 }
