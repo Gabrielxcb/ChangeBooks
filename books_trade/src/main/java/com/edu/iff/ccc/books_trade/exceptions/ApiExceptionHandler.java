@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
-public class ExceptionHandler {
+public class ApiExceptionHandler {
 
     // --- HANDLER PARA RECURSOS NÃO ENCONTRADOS (404) ---
     @ExceptionHandler({
@@ -72,4 +72,5 @@ public class ExceptionHandler {
         return pd;
     }
 }
+
 
