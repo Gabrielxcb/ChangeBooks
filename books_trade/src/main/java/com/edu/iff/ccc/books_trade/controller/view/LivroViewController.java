@@ -29,49 +29,44 @@ public class LivroViewController {
 
     @GetMapping
     public String listarLivros(Model model, @Nullable Principal principal) {
-    if (principal == null) {
-        model.addAttribute("outrosLivros", livroService.findAllLivros());
+        if (principal == null) {
+            model.addAttribute("outrosLivros", livroService.findAllLivros());
+            return "livros";
+        }
+        // MUDANÇA AQUI: Chamada direta, sem .orElseThrow()
+        Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName());
+    
+        Long meuId = usuarioLogado.getId();
+        List<Livro> meusLivros = livroService.findLivrosByDonoId(meuId);
+        List<Livro> outrosLivros = livroService.findLivrosDisponiveis(meuId);
+        model.addAttribute("meusLivros", meusLivros);
+        model.addAttribute("outrosLivros", outrosLivros);
         return "livros";
     }
-    // MUDANÇA AQUI: Chamada direta, sem .orElseThrow()
-    Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName());
-    
-    Long meuId = usuarioLogado.getId();
-    List<Livro> meusLivros = livroService.findLivrosByDonoId(meuId);
-    List<Livro> outrosLivros = livroService.findLivrosDisponiveis(meuId);
-    model.addAttribute("meusLivros", meusLivros);
-    model.addAttribute("outrosLivros", outrosLivros);
-    return "livros";
-}
 
     @GetMapping("/novo")
-public String novoLivroForm(Model model, Principal principal) {
-    // MUDANÇA AQUI: Chamada direta, sem .orElseThrow()
-    Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName());
+    public String novoLivroForm(Model model, Principal principal) {
+        Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName());
     
-    LivroDTO livroDTO = new LivroDTO();
-    livroDTO.setDonoId(usuarioLogado.getId());
-    model.addAttribute("livroDTO", livroDTO);
-    return "livro_form";
-}
+        LivroDTO livroDTO = new LivroDTO();
+        livroDTO.setDonoId(usuarioLogado.getId());
+        model.addAttribute("livroDTO", livroDTO);
+        return "livro_form";
+    }
 
-    // MÉTODO MODIFICADO: Agora ele lida com CRIAR e ATUALIZAR
     @PostMapping
     public String salvarOuAtualizarLivro(@Valid @ModelAttribute("livroDTO") LivroDTO livroDTO,
                                          BindingResult bindingResult, Principal principal) {
         if (bindingResult.hasErrors()) {
-            // Se houver erro de validação, retorna ao formulário
             return "livro_form";
         }
         
         Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName());
 
         if (livroDTO.getId() == null) {
-            // --- LÓGICA DE CRIAÇÃO (AGORA CORRIGIDA) ---
             UsuarioComum donoComum = (UsuarioComum) usuarioLogado;
             Livro novoLivro = new Livro();
             
-            // LINHAS ADICIONADAS PARA COPIAR OS DADOS DO DTO
             novoLivro.setTitulo(livroDTO.getTitulo());
             novoLivro.setAutor(livroDTO.getAutor());
             novoLivro.setGenero(livroDTO.getGenero());
@@ -82,25 +77,20 @@ public String novoLivroForm(Model model, Principal principal) {
             donoComum.addLivro(novoLivro);
             usuarioService.updateUsuario(donoComum);
         } else {
-            // Lógica para ATUALIZAR um livro existente (esta parte já estava correta)
             livroService.updateLivro(livroDTO.getId(), livroDTO, usuarioLogado);
         }
         
         return "redirect:/livros";
     }
 
-    // NOVO MÉTODO: Exibe o formulário de edição
     @GetMapping("/{id}/editar")
     public String editarLivroForm(@PathVariable("id") Long livroId, Model model, Principal principal) {
         Livro livro = livroService.findLivroById(livroId);
         
-        // Verificação de segurança: o usuário logado é o dono do livro?
         if (!livro.getDono().getEmail().equals(principal.getName())) {
-            // Se não for, redireciona ou mostra uma página de erro
             return "redirect:/livros"; 
         }
 
-        // Converte a Entidade para DTO para popular o formulário
         LivroDTO livroDTO = new LivroDTO();
         livroDTO.setId(livro.getId());
         livroDTO.setTitulo(livro.getTitulo());
@@ -115,20 +105,17 @@ public String novoLivroForm(Model model, Principal principal) {
         return "livro_form";
     }
     
-    // NOVO MÉTODO: Processa a exclusão
     @PostMapping("/{id}/excluir")
-public String excluirLivro(@PathVariable("id") Long livroId, Principal principal) {
-    // MUDANÇA AQUI: Chamada direta, sem .orElseThrow()
-    Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName());
+    public String excluirLivro(@PathVariable("id") Long livroId, Principal principal) {
+        Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName());
     
-    livroService.deleteLivro(livroId, usuarioLogado);
+        livroService.deleteLivro(livroId, usuarioLogado);
     
-    return "redirect:/livros";
-}
+        return "redirect:/livros";
+    }
 
     @GetMapping("/{id}")
     public String detalhesLivro(@PathVariable("id") Long id, Model model, @Nullable Principal principal) {
-        // MUDANÇA: Busca direta.
         Livro livro = livroService.findLivroById(id);
         model.addAttribute("livro", livro);
         

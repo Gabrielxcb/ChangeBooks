@@ -17,13 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PropostaTrocaService {
 
     private final PropostaTrocaRepository propostaRepository;
-    private final LivroRepository livroRepository; // Usaremos para salvar os livros
+    private final LivroRepository livroRepository; 
     private final UsuarioRepository usuarioRepository;
     private final TrocaService trocaService;
 
@@ -38,7 +37,6 @@ public class PropostaTrocaService {
 
     @Transactional
     public PropostaTroca criarProposta(Long livroOfertadoId, Long livroDesejadoId, Long remetenteId, Long destinatarioId) {
-        // MUDANÇA: Lança exceções específicas em vez de IllegalArgumentException
         Livro livroOfertado = livroRepository.findById(livroOfertadoId)
                 .orElseThrow(() -> new LivroNaoEncontradoException("Livro ofertado não encontrado. ID: " + livroOfertadoId));
         Livro livroDesejado = livroRepository.findById(livroDesejadoId)
@@ -70,14 +68,13 @@ public class PropostaTrocaService {
     }
 
     @Transactional(readOnly = true)
-    public PropostaTroca findPropostaById(Long id) { // MUDANÇA: Retorna o objeto diretamente
+    public PropostaTroca findPropostaById(Long id) { 
         return propostaRepository.findById(id)
             .orElseThrow(() -> new PropostaNaoEncontradaException("Proposta não encontrada com o ID: " + id));
     }
 
     @Transactional
     public PropostaTroca aceitarProposta(Long propostaId) {
-        // MUDANÇA: Usa o método acima para buscar a proposta, simplificando o código.
         PropostaTroca proposta = this.findPropostaById(propostaId);
 
         if (proposta.getStatus() == StatusProposta.PENDENTE) {
@@ -101,7 +98,6 @@ public class PropostaTrocaService {
 
     @Transactional
     public PropostaTroca recusarProposta(Long propostaId) {
-        // MUDANÇA: Usa o método acima para buscar a proposta, simplificando o código.
         PropostaTroca proposta = this.findPropostaById(propostaId);
 
         if (proposta.getStatus() == StatusProposta.PENDENTE) {

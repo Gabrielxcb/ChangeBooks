@@ -13,7 +13,6 @@ import java.util.List;
 @DiscriminatorValue("COMUM")
 public class UsuarioComum extends Usuario {
 
-    // RELAÇÃO ATUALIZADA AQUI
     @OneToMany(mappedBy = "dono", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Livro> livrosCadastrados;
 
@@ -23,7 +22,6 @@ public class UsuarioComum extends Usuario {
     @OneToMany(mappedBy = "destinatario")
     private List<PropostaTroca> propostasRecebidas;
 
-    // Construtores
     public UsuarioComum() {
         super();
     }
@@ -32,7 +30,6 @@ public class UsuarioComum extends Usuario {
         super(nome, email, senha, telefone);
     }
 
-    // Getters e Setters
     public List<Livro> getLivrosCadastrados() {
         return livrosCadastrados;
     }

@@ -14,7 +14,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -32,7 +31,7 @@ public class PropostaTrocaRestController {
     @Operation(summary = "Lista todas as propostas de troca do sistema")
     @ApiResponse(responseCode = "200", description = "Lista de propostas retornada com sucesso")
     public ResponseEntity<List<PropostaTrocaDTO>> listarTodas() {
-        // A chamada agora deve funcionar sem erros.
+
         List<PropostaTroca> propostas = propostaService.findAll();
         
         List<PropostaTrocaDTO> propostasDTO = new ArrayList<>();

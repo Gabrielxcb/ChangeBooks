@@ -82,7 +82,6 @@ public class TrocaViewController {
         return "redirect:/trocas";
     }
 
-    // Nenhuma mudança aqui era estritamente necessária, mas revisada por segurança.
     @GetMapping("/{id}")
     public String detalhesTroca(@PathVariable("id") Long id, Model model) {
         model.addAttribute("trocaId", id);

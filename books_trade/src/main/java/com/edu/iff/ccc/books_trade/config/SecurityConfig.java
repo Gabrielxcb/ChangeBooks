@@ -21,33 +21,31 @@ public class SecurityConfig {
     }
 
     @Bean
-    @Order(1) // PRIORIDADE 1: Esta regra é verificada PRIMEIRO
+    @Order(1)
     public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-            .securityMatcher("/api/**") // Aplica esta configuração APENAS para URLs que começam com /api/
+            .securityMatcher("/api/**")
             .authorizeHttpRequests(authorize -> authorize
-                // Por enquanto, vamos permitir todas as requisições para a API para facilitar os testes
-                .anyRequest().permitAll() // TODO: Mudar para .authenticated() na Etapa 5 (Segurança da API com JWT)
+            
+                .anyRequest().permitAll()
             )
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Diz ao Spring para NÃO usar sessões para a API
-            .csrf(csrf -> csrf.disable()); // Desabilita o CSRF para a API, pois usaremos tokens JWT no futuro
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .csrf(csrf -> csrf.disable());
 
         return http.build();
     }
 
     @Bean
-    @Order(2) // PRIORIDADE 2: Se a URL não for /api/**, esta regra será verificada
+    @Order(2) 
     public SecurityFilterChain webSecurityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authorize -> authorize
-                // --- ADICIONADO PARA LIBERAR O SWAGGER ---
                 .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                // Regras para a aplicação web (exatamente como estavam antes)
                 .requestMatchers(HttpMethod.GET, "/", "/livros", "/livros/{id}").permitAll()
                 .requestMatchers("/auth/**", "/css/**", "/js/**", "/images/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
                 .requestMatchers("/livros/{id}/editar", "/livros/{id}/excluir", "/livros/novo", "/trocas/**").authenticated()
-                .anyRequest().authenticated() // Qualquer outra requisição WEB precisa de autenticação
+                .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/auth/login")

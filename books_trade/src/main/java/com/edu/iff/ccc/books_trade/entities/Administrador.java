@@ -7,7 +7,6 @@ import jakarta.persistence.Entity;
 @DiscriminatorValue("ADM")
 public class Administrador extends Usuario {
 
-    // Construtores
     public Administrador() {
         super();
     }

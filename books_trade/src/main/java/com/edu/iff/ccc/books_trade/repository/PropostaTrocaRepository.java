@@ -8,6 +8,5 @@ import java.util.List;
 @Repository
 public interface PropostaTrocaRepository extends JpaRepository<PropostaTroca, Long> {
 
-    // Busca propostas onde o usuário é o remetente OU o destinatário
     List<PropostaTroca> findByRemetenteIdOrDestinatarioId(Long remetenteId, Long destinatarioId);
 }

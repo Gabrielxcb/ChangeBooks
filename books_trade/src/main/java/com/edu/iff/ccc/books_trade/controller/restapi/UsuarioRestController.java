@@ -27,8 +27,6 @@ public class UsuarioRestController {
     @Autowired
     private UsuarioService usuarioService;
 
-    // GET para listar todos os usuários
-    // CUIDADO: Em produção, este endpoint deveria ser protegido para admins.
     @GetMapping
     @Operation(summary = "Lista todos os usuários")
     @ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso")
@@ -41,13 +39,12 @@ public class UsuarioRestController {
             dto.setNome(usuario.getNome());
             dto.setEmail(usuario.getEmail());
             dto.setTelefone(usuario.getTelefone());
-            // A senha NUNCA é retornada
+            
             usuariosDTO.add(dto);
         }
         return ResponseEntity.ok(usuariosDTO);
     }
 
-    // GET para buscar um usuário por ID
     @GetMapping("/{id}")
     @Operation(summary = "Busca um usuário por seu ID")
     @ApiResponses(value = {
@@ -55,9 +52,6 @@ public class UsuarioRestController {
         @ApiResponse(responseCode = "404", description = "Usuário não encontrado com o ID fornecido")
     })
     public ResponseEntity<UsuarioDTO> buscarPorId(@PathVariable("id") Long id) {
-        // MUDANÇA: A busca agora é direta.
-        // Se o usuário não for encontrado, o serviço lança a exceção e o @ControllerAdvice a captura,
-        // retornando um 404 Not Found com JSON automaticamente.
         Usuario usuario = usuarioService.findUsuarioById(id);
         
         UsuarioDTO dto = new UsuarioDTO();
@@ -69,7 +63,7 @@ public class UsuarioRestController {
         return ResponseEntity.ok(dto);
     }
 
-    // POST para criar um novo usuário (cadastro)
+    
     @PostMapping
     @Operation(summary = "Cadastra um novo usuário")
     @ApiResponses(value = {
@@ -80,19 +74,18 @@ public class UsuarioRestController {
         UsuarioComum usuario = new UsuarioComum();
         usuario.setNome(usuarioDTO.getNome());
         usuario.setEmail(usuarioDTO.getEmail());
-        usuario.setSenha(usuarioDTO.getSenha()); // Senha em texto plano, o serviço irá criptografar
+        usuario.setSenha(usuarioDTO.getSenha());
         usuario.setTelefone(usuarioDTO.getTelefone());
 
         Usuario novoUsuario = usuarioService.criarNovoUsuario(usuario);
 
         usuarioDTO.setId(novoUsuario.getId());
-        usuarioDTO.setSenha(null); // Remove a senha da resposta
+        usuarioDTO.setSenha(null);
 
         URI uri = uriBuilder.path("/api/v1/usuarios/{id}").buildAndExpand(novoUsuario.getId()).toUri();
         return ResponseEntity.created(uri).body(usuarioDTO);
     }
 
-    // PUT para atualizar um usuário
     @PutMapping("/{id}")
     @Operation(summary = "Atualiza um usuário existente")
     @ApiResponses(value = {
@@ -101,8 +94,7 @@ public class UsuarioRestController {
         @ApiResponse(responseCode = "400", description = "Erro de validação nos dados do usuário")
     })
     public ResponseEntity<UsuarioDTO> atualizar(@PathVariable("id") Long id, @Valid @RequestBody UsuarioDTO usuarioDTO) {
-        // MUDANÇA: A busca agora é direta.
-        // O @ControllerAdvice também funcionará aqui se o ID for inválido.
+        
         Usuario usuario = usuarioService.findUsuarioById(id);
         
         usuario.setNome(usuarioDTO.getNome());

@@ -36,7 +36,7 @@ public class LivroRestController {
     @ApiResponse(responseCode = "200", description = "Lista de livros retornada com sucesso")
     public ResponseEntity<List<LivroDTO>> listarTodos() {
         List<Livro> livros = livroService.findAllLivros();
-        // Usando o método helper para converter a lista
+
         List<LivroDTO> livrosDTO = livros.stream().map(this::toDTO).collect(Collectors.toList());
         return ResponseEntity.ok(livrosDTO);
     }
@@ -49,7 +49,7 @@ public class LivroRestController {
     })
     public ResponseEntity<LivroDTO> buscarPorId(@PathVariable("id") Long id) {
         Livro livro = livroService.findLivroById(id);
-        // Usando o método helper para converter a entidade em DTO
+
         return ResponseEntity.ok(toDTO(livro));
     }
 
@@ -62,7 +62,6 @@ public class LivroRestController {
     public ResponseEntity<LivroDTO> criar(@Valid @RequestBody LivroDTO livroDTO, UriComponentsBuilder uriBuilder) {
         UsuarioComum dono = (UsuarioComum) usuarioService.findUsuarioById(livroDTO.getDonoId());
 
-        // Lógica de preenchimento que faltava
         Livro livro = new Livro();
         livro.setTitulo(livroDTO.getTitulo());
         livro.setAutor(livroDTO.getAutor());
@@ -75,11 +74,10 @@ public class LivroRestController {
         usuarioService.updateUsuario(dono);
         
         URI uri = uriBuilder.path("/api/v1/livros/{id}").buildAndExpand(livro.getId()).toUri();
-        // Usando o método helper para criar a resposta com o DTO correto
+        
         return ResponseEntity.created(uri).body(toDTO(livro));
     }
     
-    // Endpoint para ATUALIZAR (PUT) um livro existente
     @PutMapping("/{id}")
     @Operation(summary = "Atualiza um livro existente")
     @ApiResponses(value = {
@@ -90,7 +88,7 @@ public class LivroRestController {
     public ResponseEntity<LivroDTO> atualizar(@PathVariable("id") Long id, @Valid @RequestBody LivroDTO livroDTO) {
         Usuario dono = usuarioService.findUsuarioById(livroDTO.getDonoId());
         Livro livroAtualizado = livroService.updateLivro(id, livroDTO, dono);
-        // Usando o método helper para criar a resposta com o DTO correto
+        
         return ResponseEntity.ok(toDTO(livroAtualizado));
     }
     
@@ -107,7 +105,6 @@ public class LivroRestController {
         return ResponseEntity.noContent().build();
     }
     
-    // --- MÉTODO HELPER PRIVADO PARA CONVERSÃO ---
     private LivroDTO toDTO(Livro livro) {
         LivroDTO dto = new LivroDTO();
         dto.setId(livro.getId());

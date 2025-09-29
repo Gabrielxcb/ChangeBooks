@@ -4,7 +4,7 @@
 
     <li sec:authorize="isAuthenticated()"><a th:href="@{/livros/novo}">Cadastrar Livro</a></li>
     <li sec:authorize="isAuthenticated()"><a th:href="@{/trocas}">Minhas Propostas</a></li>
-    <li sec:authorize="isAuthenticated()"><a th:href="@{/admin}">Administração</a></li>
+    <!--<li sec:authorize="isAuthenticated()"><a th:href="@{/admin}">Administração</a></li>-->
 
     <li sec:authorize="isAuthenticated()">
         <form th:action="@{/logout}" method="post" style="display:inline-block; margin:0; padding:0;">

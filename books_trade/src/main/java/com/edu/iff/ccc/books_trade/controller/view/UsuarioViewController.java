@@ -50,7 +50,6 @@ public class UsuarioViewController {
         usuario.setSenha(usuarioDTO.getSenha());
         usuario.setTelefone(usuarioDTO.getTelefone());
 
-        // ÚNICA MUDANÇA NESTA CLASSE: Chamando o método correto.
         usuarioService.criarNovoUsuario(usuario);
 
         return "redirect:/usuarios";
@@ -58,8 +57,6 @@ public class UsuarioViewController {
 
     @GetMapping("/{id}")
     public String getPerfilUsuario(@PathVariable("id") Long id, Model model) {
-        // MUDANÇA: A verificação de 'Optional' foi removida.
-        // O serviço agora garante que um usuário será retornado, ou uma exceção será lançada.
         Usuario usuario = usuarioService.findUsuarioById(id);
         model.addAttribute("usuario", usuario);
         return "usuario";
@@ -67,10 +64,8 @@ public class UsuarioViewController {
 
     @GetMapping("/{id}/editar")
     public String editarPerfilUsuario(@PathVariable("id") Long id, Model model) {
-        // MUDANÇA: A verificação de 'Optional' foi removida.
         Usuario usuario = usuarioService.findUsuarioById(id);
 
-        // O resto da lógica continua igual
         UsuarioDTO usuarioDTO = new UsuarioDTO();
         usuarioDTO.setId(usuario.getId());
         usuarioDTO.setNome(usuario.getNome());

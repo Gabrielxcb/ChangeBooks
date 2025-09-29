@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TrocaRepository extends JpaRepository<Troca, Long> {
-    // Por enquanto, os métodos padrão são suficientes.
+    
 }

@@ -26,14 +26,12 @@ public class LivroDTO {
     @Min(value = 1, message = "O ano de publicação deve ser maior que 0.")
     private int anoPublicacao;
 
-    // --- CAMPOS QUE FALTAVAM ---
     @NotBlank(message = "O estado de conservação não pode ser vazio.")
     private String estadoConservacao;
 
     @NotNull(message = "O dono do livro precisa ser selecionado.")
     private Long donoId;
 
-    // --- Getters e Setters ---
     public Long getId() {
         return id;
     }
@@ -82,7 +80,6 @@ public class LivroDTO {
         this.anoPublicacao = anoPublicacao;
     }
 
-    // --- Getters e Setters para os novos campos ---
     public String getEstadoConservacao() {
         return estadoConservacao;
     }

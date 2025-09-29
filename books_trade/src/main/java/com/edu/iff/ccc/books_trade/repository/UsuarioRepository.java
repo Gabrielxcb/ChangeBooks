@@ -12,10 +12,8 @@ import java.util.Optional;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
-    // Método para encontrar um usuário pelo email, útil para o login
     Optional<Usuario> findByEmail(String email);
 
-    // Query para buscar apenas os usuários do tipo COMUM
     @Query("SELECT u FROM Usuario u WHERE TYPE(u) = UsuarioComum")
     List<UsuarioComum> findAllUsuariosComuns();
 }

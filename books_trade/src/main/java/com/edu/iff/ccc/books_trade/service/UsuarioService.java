@@ -1,6 +1,5 @@
 package com.edu.iff.ccc.books_trade.service;
 
-// Adicione os imports das suas exceções customizadas
 import com.edu.iff.ccc.books_trade.exceptions.EmailJaCadastradoException;
 import com.edu.iff.ccc.books_trade.exceptions.EmailNaoEncontradoException;
 import com.edu.iff.ccc.books_trade.exceptions.UsuarioNaoEncontradoException;
@@ -38,7 +37,6 @@ public class UsuarioService implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // O UsernameNotFoundException é do próprio Spring Security, então o mantemos aqui.
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o email: " + email));
 
@@ -50,7 +48,6 @@ public class UsuarioService implements UserDetailsService {
     
     @Transactional
     public Usuario criarNovoUsuario(Usuario usuario) {
-        // MUDANÇA 1: Verifica se o e-mail já existe antes de salvar
         if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
             throw new EmailJaCadastradoException("O e-mail '" + usuario.getEmail() + "' já está em uso.");
         }
@@ -64,13 +61,13 @@ public class UsuarioService implements UserDetailsService {
     }
 
     @Transactional(readOnly = true)
-    public Usuario findUsuarioByEmail(String email) { // Retorna Usuario diretamente
+    public Usuario findUsuarioByEmail(String email) {
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new EmailNaoEncontradoException("Usuário não encontrado com o e-mail: " + email));
     }
 
     @Transactional(readOnly = true)
-    public Usuario findUsuarioById(Long id) { // Retorna Usuario diretamente
+    public Usuario findUsuarioById(Long id) { 
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado com o ID: " + id));
     }
