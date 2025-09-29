@@ -120,7 +120,7 @@ public class RestExceptionHandler {
         problemDetail.setProperty("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         problemDetail.setProperty("message", ex.getMessage());
         problemDetail.setProperty("exception", ex.getClass().getName());
-        problemDetaild.setProperty("timestamp", ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()).toString());
+        problemDetail.setProperty("timestamp", ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()).toString());
         problemDetail.setProperty("path", req.getRequestURI());
         problemDetail.setInstance(URI.create(req.getRequestURI()));
         

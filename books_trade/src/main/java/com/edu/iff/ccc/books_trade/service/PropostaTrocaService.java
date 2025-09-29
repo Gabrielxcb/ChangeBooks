@@ -3,6 +3,7 @@ package com.edu.iff.ccc.books_trade.service;
 import com.edu.iff.ccc.books_trade.exceptions.LivroNaoEncontradoException;
 import com.edu.iff.ccc.books_trade.exceptions.PropostaNaoEncontradaException;
 import com.edu.iff.ccc.books_trade.exceptions.UsuarioNaoEncontradoException;
+import com.edu.iff.ccc.books_trade.exceptions.RegraDeNegocioException;
 import com.edu.iff.ccc.books_trade.entities.Livro;
 import com.edu.iff.ccc.books_trade.entities.PropostaTroca;
 import com.edu.iff.ccc.books_trade.entities.StatusProposta;
