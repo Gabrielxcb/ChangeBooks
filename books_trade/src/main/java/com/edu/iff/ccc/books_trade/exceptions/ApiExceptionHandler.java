@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class ApiExceptionHandler {
 
-    // --- HANDLER PARA RECURSOS NÃO ENCONTRADOS (404) ---
     @ExceptionHandler({
         UsuarioNaoEncontradoException.class,
         LivroNaoEncontradoException.class,
@@ -37,7 +36,7 @@ public class ApiExceptionHandler {
         return pd;
     }
 
-    // --- HANDLER PARA E-MAIL JÁ CADASTRADO (400) ---
+
     @ExceptionHandler(EmailJaCadastradoException.class)
     public ProblemDetail handleEmailJaCadastradoException(HttpServletRequest req, EmailJaCadastradoException ex) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
@@ -53,7 +52,6 @@ public class ApiExceptionHandler {
         return pd;
     }
 
-    // --- HANDLER PARA VALIDAÇÃO DE DTOS (@Valid) (400) ---
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleValidationException(HttpServletRequest req, MethodArgumentNotValidException ex) {
         List<String> errors = ex.getBindingResult().getFieldErrors().stream()

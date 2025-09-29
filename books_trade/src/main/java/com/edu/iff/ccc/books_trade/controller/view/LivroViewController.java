@@ -33,7 +33,7 @@ public class LivroViewController {
             model.addAttribute("outrosLivros", livroService.findAllLivros());
             return "livros";
         }
-        // MUDANÇA AQUI: Chamada direta, sem .orElseThrow()
+        
         Usuario usuarioLogado = usuarioService.findUsuarioByEmail(principal.getName());
     
         Long meuId = usuarioLogado.getId();
