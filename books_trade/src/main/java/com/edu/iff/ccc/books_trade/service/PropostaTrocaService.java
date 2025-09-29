@@ -93,7 +93,7 @@ public class PropostaTrocaService {
             
             return propostaRepository.save(proposta);
         }
-        throw new IllegalStateException("Esta proposta não pode mais ser aceita.");
+        throw new RegraDeNegocioException("Esta proposta não pode mais ser aceita.");
     }
 
     @Transactional
@@ -104,7 +104,7 @@ public class PropostaTrocaService {
             proposta.setStatus(StatusProposta.RECUSADA);
             return propostaRepository.save(proposta);
         }
-        throw new IllegalStateException("Esta proposta não pode mais ser recusada.");
+        throw new RegraDeNegocioException("Esta proposta não pode mais ser recusada.");
     }
 
     @Transactional(readOnly = true)

@@ -42,7 +42,7 @@ public class LivroService {
     @Transactional
     public void deleteLivroById(Long id) {
         if (!livroRepository.existsById(id)) {
-            throw new IllegalArgumentException("Livro não encontrado com o ID: " + id);
+            throw new LivroNaoEncontradoException("Livro não encontrado com o ID: " + id);
         }
         livroRepository.deleteById(id);
     }
