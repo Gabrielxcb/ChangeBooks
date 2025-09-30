@@ -6,10 +6,10 @@ html {
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    background-color: #f4f4f9; /* Fundo cinza claro visível nas laterais */
+    background-color: #f4f4f9;
     color: #333;
     line-height: 1.6;
-    min-height: 100vh; /* Garante que o body ocupe 100% da altura da tela */
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
@@ -20,15 +20,15 @@ h1, h2 {
 
 .container {
     max-width: 1100px;
-    margin: 0 auto; /* Centraliza o container horizontalmente */
-    padding: 0 20px; /* Margens laterais para o conteúdo não colar nas bordas */
+    margin: 0 auto; 
+    padding: 0 20px;
 }
 
 /* --- BARRA SUPERIOR (HEADER) --- */
 .site-header {
     background-color: #333;
     color: #fff;
-    padding: 0.8rem 0; /* Altura do cabeçalho (um pouco maior) */
+    padding: 0.8rem 0;
     width: 100%;
 }
 
@@ -66,18 +66,18 @@ h1, h2 {
 
 /* --- ÁREA DE CONTEÚDO PRINCIPAL (MAIN) --- */
 .content-wrapper {
-    flex: 1; /* Faz o conteúdo principal crescer e empurrar o rodapé para baixo */
+    flex: 1; 
     width: 100%;
-    background-color: #fff; /* Fundo branco para a área de conteúdo */
-    padding: 30px 0; /* Espaçamento vertical dentro da área de conteúdo */
+    background-color: #fff;
+    padding: 30px 0;
 }
 
 /* --- RODAPÉ (FOOTER) --- */
 .site-footer {
-    background: #333;
-    color: #fff;
+    /*background: #333;
+    color: #fff;*/
     text-align: center;
-    padding: 0.6rem 0; /* Altura do rodapé (um pouco menor) */
+    padding: 1px 0;
     width: 100%;
 }
 
@@ -158,3 +158,32 @@ a.button-link:hover {
     background-color: #218838;
     text-decoration: none;
 }
+
+
+/* --- ESTILO PARA A HOME PAGE COM IMAGEM DE FUNDO --- */
+
+.home-background {
+    background-image: url('https://distrito.me/wp-content/uploads/2022/05/10-livros-sobre-inovacao-para-ler-em-2022.jpeg');
+    
+    background-size: cover;    
+    background-position: center;
+    padding: 100px 40px; 
+    border-radius: 8px; 
+    text-align: center;
+    color: white;
+}
+
+.home-background h2 {
+    color: white;
+    font-size: 2.8em;
+    font-weight: bold;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8); 
+}
+
+.home-background p {
+    font-size: 1.3em;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+    max-width: 600px;
+    margin: 20px auto 0 auto;
+}
+

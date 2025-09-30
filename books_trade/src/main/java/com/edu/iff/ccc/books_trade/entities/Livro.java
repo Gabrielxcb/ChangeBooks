@@ -35,12 +35,11 @@ public class Livro implements Serializable {
     
     private int anoPublicacao;
 
-    // Relacionamento com UsuarioComum (dono)
+    
     @ManyToOne
     @JoinColumn(name = "dono_id")
     private UsuarioComum dono;
 
-    // Construtores
     public Livro() {
     }
 
@@ -54,7 +53,7 @@ public class Livro implements Serializable {
         this.anoPublicacao = anoPublicacao;
     }
 
-    // Getters e Setters
+
     public Long getId() {
         return id;
     }

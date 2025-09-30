@@ -96,7 +96,7 @@ public class PropostaTroca implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataEnvio;
 
-    // Construtores e Getters/Setters
+    
     public PropostaTroca() {
     }
 

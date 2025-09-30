@@ -18,7 +18,6 @@ public class PropostaTrocaDTO {
     @NotNull(message = "O ID do destinatário não pode ser nulo.")
     private Long destinatarioId;
 
-    // Getters e Setters
     public Long getId() {
         return id;
     }

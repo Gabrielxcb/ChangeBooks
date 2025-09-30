@@ -2,6 +2,7 @@ package com.edu.iff.ccc.books_trade.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class LivroDTO {
@@ -25,7 +26,12 @@ public class LivroDTO {
     @Min(value = 1, message = "O ano de publicação deve ser maior que 0.")
     private int anoPublicacao;
 
-    // Getters e Setters
+    @NotBlank(message = "O estado de conservação não pode ser vazio.")
+    private String estadoConservacao;
+
+    @NotNull(message = "O dono do livro precisa ser selecionado.")
+    private Long donoId;
+
     public Long getId() {
         return id;
     }
@@ -74,6 +80,19 @@ public class LivroDTO {
         this.anoPublicacao = anoPublicacao;
     }
 
+    public String getEstadoConservacao() {
+        return estadoConservacao;
+    }
 
+    public void setEstadoConservacao(String estadoConservacao) {
+        this.estadoConservacao = estadoConservacao;
+    }
+
+    public Long getDonoId() {
+        return donoId;
+    }
+
+    public void setDonoId(Long donoId) {
+        this.donoId = donoId;
+    }
 }
-

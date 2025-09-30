@@ -22,7 +22,7 @@ public class UsuarioDTO {
 
     private String telefone;
 
-    // Construtores, Getters e Setters
+    
     public UsuarioDTO() {
     }
 

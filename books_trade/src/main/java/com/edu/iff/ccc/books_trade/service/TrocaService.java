@@ -2,21 +2,27 @@ package com.edu.iff.ccc.books_trade.service;
 
 import com.edu.iff.ccc.books_trade.entities.PropostaTroca;
 import com.edu.iff.ccc.books_trade.entities.Troca;
+import com.edu.iff.ccc.books_trade.repository.TrocaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Service
 public class TrocaService {
 
-    private final List<Troca> trocas = new ArrayList<>();
-    private long idCounter = 1;
+    private final TrocaRepository trocaRepository;
 
-    public void criarTroca(PropostaTroca proposta) {
+    @Autowired
+    public TrocaService(TrocaRepository trocaRepository) {
+        this.trocaRepository = trocaRepository;
+    }
+
+    @Transactional
+    public Troca criarTroca(PropostaTroca proposta) {
         Troca novaTroca = new Troca();
-        novaTroca.setId(idCounter++);
         novaTroca.setPropostaTroca(proposta);
         novaTroca.setLivroEnviado(proposta.getLivroOfertado());
         novaTroca.setLivroRecebido(proposta.getLivroDesejado());
@@ -24,11 +30,11 @@ public class TrocaService {
         novaTroca.setUsuarioDestino(proposta.getDestinatario());
         novaTroca.setDataTroca(new Date());
 
-        trocas.add(novaTroca);
-        System.out.println("Troca registrada para a proposta ID " + proposta.getId());
+        return trocaRepository.save(novaTroca);
     }
-    
+
+    @Transactional(readOnly = true)
     public List<Troca> findAllTrocas() {
-        return new ArrayList<>(trocas);
+        return trocaRepository.findAll();
     }
 }
