@@ -63,4 +63,4 @@ Para rodar a aplicação localmente, siga os passos abaixo:
 5.  **Acesse a Aplicação:** Após o startup, abra seu navegador e acesse a URL:
     `http://localhost:8080`
 6.  **Acesse a documentação no swagger:**
-   'http://localhost:8080/swagger-ui/index.html#/' 
+   'http://localhost:8080/swagger-ui/index.html' 
