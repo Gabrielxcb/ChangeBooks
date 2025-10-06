@@ -15,34 +15,29 @@ public class Troca implements Serializable {
     private Long id;
     
     @ManyToOne
-    @JoinColumn(name = "usuario_id") // O nome da coluna pode variar
+    @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
     @ManyToOne
-    @JoinColumn(name = "livro_id") // O nome da coluna pode variar
+    @JoinColumn(name = "livro_id")
     private Livro livro;
 
-    // Relacionamento One-to-One: cada troca se refere a uma proposta de troca.
     @OneToOne
     @JoinColumn(name = "proposta_troca_id")
     private PropostaTroca propostaTroca;
 
-    // Relacionamento Many-to-One: cada troca tem um livro enviado.
     @ManyToOne
     @JoinColumn(name = "livro_enviado_id")
     private Livro livroEnviado;
 
-    // Relacionamento Many-to-One: cada troca tem um livro recebido.
     @ManyToOne
     @JoinColumn(name = "livro_recebido_id")
     private Livro livroRecebido;
 
-    // Relacionamento Many-to-One: cada troca tem um usuário que a originou.
     @ManyToOne
     @JoinColumn(name = "usuario_origem_id")
     private UsuarioComum usuarioOrigem;
 
-    // Relacionamento Many-to-One: cada troca tem um usuário que a recebeu.
     @ManyToOne
     @JoinColumn(name = "usuario_destino_id")
     private UsuarioComum usuarioDestino;
@@ -50,11 +45,11 @@ public class Troca implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date dataTroca;
 
-    // Construtores
+    
     public Troca() {
     }
 
-    // Getters e Setters (omiti para encurtar, mas você precisa adicioná-los)
+    
     public Long getId() {
         return id;
     }

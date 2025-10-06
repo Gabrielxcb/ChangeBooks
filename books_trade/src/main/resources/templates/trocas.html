@@ -2,13 +2,55 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout :: layout(~{::body})}">
 <body>
-    <h2>Lista de Trocas</h2>
-    <ul>
-        <li th:each="troca : ${trocas}">
-            <span th:text="${troca.usuario.nome}"></span> oferece <span th:text="${troca.livro.titulo}"></span>
-        </li>
-    </ul>
-    <a th:href="@{/trocas/nova}">Registrar nova troca</a>
+    <h2>Minhas Propostas de Troca</h2>
+    
+    <div th:if="${#lists.isEmpty(propostas)}">
+        <p>Você ainda não tem nenhuma proposta enviada ou recebida.</p>
+    </div>
+
+    <table border="1" style="width:100%;" th:if="${not #lists.isEmpty(propostas)}">
+        <thead>
+            <tr>
+                <th>De</th>
+                <th>Oferece</th>
+                <th>Para</th>
+                <th>Deseja</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="proposta : ${propostas}">
+                <td th:text="${proposta.remetente.nome}"></td>
+                <td th:text="${proposta.livroOfertado.titulo}"></td>
+                <td th:text="${proposta.destinatario.nome}"></td>
+                <td th:text="${proposta.livroDesejado.titulo}"></td>
+                <td th:text="${proposta.status}"></td>
+                <td>
+                    <div th:if="${proposta.destinatario.id == usuarioLogadoId and proposta.status.name() == 'PENDENTE'}">
+                        
+                        <form th:action="@{/trocas/{id}/aceitar(id=${proposta.id})}" method="post" style="display:inline;">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <button type="submit">Aceitar</button>
+                        </form>
+
+                        <form th:action="@{/trocas/{id}/recusar(id=${proposta.id})}" method="post" style="display:inline;">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <button type="submit">Recusar</button>
+                        </form>
+
+                    </div>
+                    
+                    <span th:if="${proposta.remetente.id == usuarioLogadoId and proposta.status.name() == 'PENDENTE'}">
+                        Aguardando resposta...
+                    </span>
+                    <span th:if="${proposta.status.name() != 'PENDENTE'}">
+                        Proposta finalizada.
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </body>
 </html>
 

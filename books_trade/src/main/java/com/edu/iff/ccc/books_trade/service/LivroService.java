@@ -1,47 +1,93 @@
 package com.edu.iff.ccc.books_trade.service;
 
+import com.edu.iff.ccc.books_trade.dto.LivroDTO;
 import com.edu.iff.ccc.books_trade.entities.Livro;
+import com.edu.iff.ccc.books_trade.entities.Usuario;
+import com.edu.iff.ccc.books_trade.entities.UsuarioComum;
+import com.edu.iff.ccc.books_trade.exceptions.LivroNaoEncontradoException;
+import com.edu.iff.ccc.books_trade.repository.LivroRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LivroService {
 
-    private final List<Livro> livros = new ArrayList<>();
-    private long idCounter = 1;
+    private final LivroRepository livroRepository;
 
-    public void saveLivro(Livro livro) {
-        if (livro.getId() == null) {
-            livro.setId(idCounter++);
-        }
-        livros.add(livro);
-        System.out.println("Livro salvo: " + livro.getTitulo() + " - Autor: " + livro.getAutor());
+    @Autowired
+    public LivroService(LivroRepository livroRepository) {
+        this.livroRepository = livroRepository;
     }
 
+    @Transactional
+    public Livro saveLivro(Livro livro) {
+        return livroRepository.save(livro);
+    }
+
+    @Transactional(readOnly = true)
     public Livro findLivroById(Long id) {
-        return livros.stream()
-                .filter(l -> l.getId().equals(id))
-                .findFirst()
-                .orElse(null);
+        return livroRepository.findById(id)
+                .orElseThrow(() -> new LivroNaoEncontradoException("Livro não encontrado com o ID: " + id));
+    }
+    
+    @Transactional(readOnly = true)
+    public List<Livro> findAllLivros() {
+        return livroRepository.findAll();
+    }
+    
+    @Transactional
+    public void deleteLivroById(Long id) {
+        if (!livroRepository.existsById(id)) {
+            throw new LivroNaoEncontradoException("Livro não encontrado com o ID: " + id);
+        }
+        livroRepository.deleteById(id);
     }
 
-    public List<Livro> findAllLivros() {
-        if (livros.isEmpty()) {
-            Livro livro1 = new Livro("Rainha Vermelha", "Victoria Aveyard", "Fantasia", "Usado", null, "Descrição de Rainha Vermelha", 2015);
-            livro1.setId(idCounter++);
-            livros.add(livro1);
+    @Transactional(readOnly = true)
+    public List<Livro> findLivrosByDonoId(Long donoId) {
+        return livroRepository.findByDonoIdAndDisponivelIsTrue(donoId);
+    }
 
-            Livro livro2 = new Livro("A Cor Púrpura", "Alice Walker", "Ficção", "Novo", null, "Descrição de A Cor Púrpura", 1982);
-            livro2.setId(idCounter++);
-            livros.add(livro2);
+    @Transactional(readOnly = true)
+    public List<Livro> findLivrosDisponiveis(Long meuId) {
+        return livroRepository.findByDonoIdNotAndDisponivelIsTrue(meuId);
+    }
 
-            Livro livro3 = new Livro("1984", "George Orwell", "Distopia", "Semi-novo", null, "Descrição de 1984", 1949);
-            livro3.setId(idCounter++);
-            livros.add(livro3);
+    @Transactional
+    public Livro updateLivro(Long livroId, LivroDTO livroDTO, Usuario dono) {
+        Livro livro = this.findLivroById(livroId);
+
+        if (!livro.getDono().getId().equals(dono.getId())) {
+            throw new SecurityException("Você não tem permissão para editar este livro.");
         }
-        return new ArrayList<>(livros);
+
+        livro.setAutor(livroDTO.getAutor());
+        livro.setGenero(livroDTO.getGenero());
+        livro.setEstadoConservacao(livroDTO.getEstadoConservacao());
+        livro.setDescricao(livroDTO.getDescricao());
+        livro.setAnoPublicacao(livroDTO.getAnoPublicacao());
+    
+        return livroRepository.save(livro);
+    }
+
+    @Transactional
+    public void deleteLivro(Long livroId, Usuario usuarioLogado) {
+        Livro livro = this.findLivroById(livroId);
+
+        if (!livro.getDono().getId().equals(usuarioLogado.getId())) {
+        throw new SecurityException("Você não tem permissão para excluir este livro.");
+        }
+    
+        UsuarioComum dono = livro.getDono();
+    
+        dono.getLivrosCadastrados().remove(livro);
+    
+        livro.setDono(null);
+    
+        livroRepository.delete(livro);
     }
 }

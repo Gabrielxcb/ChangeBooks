@@ -1,51 +1,84 @@
 package com.edu.iff.ccc.books_trade.service;
 
+import com.edu.iff.ccc.books_trade.exceptions.EmailJaCadastradoException;
+import com.edu.iff.ccc.books_trade.exceptions.EmailNaoEncontradoException;
+import com.edu.iff.ccc.books_trade.exceptions.UsuarioNaoEncontradoException;
+
 import com.edu.iff.ccc.books_trade.entities.Usuario;
 import com.edu.iff.ccc.books_trade.entities.UsuarioComum;
+import com.edu.iff.ccc.books_trade.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
-public class UsuarioService {
+public class UsuarioService implements UserDetailsService {
 
-    private final List<Usuario> usuarios = new ArrayList<>();
-    private long idCounter = 1;
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public void saveUsuario(Usuario usuario) {
-        if (usuario.getId() == null) {
-            usuario.setId(idCounter++);
+    @Autowired
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+        this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o email: " + email));
+
+        Collection<? extends GrantedAuthority> authorities =
+            Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+
+        return new User(usuario.getEmail(), usuario.getSenha(), authorities);
+    }
+    
+    @Transactional
+    public Usuario criarNovoUsuario(Usuario usuario) {
+        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+            throw new EmailJaCadastradoException("O e-mail '" + usuario.getEmail() + "' já está em uso.");
         }
-        usuarios.add(usuario);
-        System.out.println("Usuário salvo: " + usuario.getNome() + " - Email: " + usuario.getEmail());
+        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        return usuarioRepository.save(usuario);
     }
 
-    public Optional<Usuario> findUsuarioById(Long id) {
-        return usuarios.stream()
-                .filter(u -> u.getId().equals(id))
-                .findFirst();
+    @Transactional
+    public Usuario updateUsuario(Usuario usuario) {
+        return usuarioRepository.save(usuario);
     }
 
+    @Transactional(readOnly = true)
+    public Usuario findUsuarioByEmail(String email) {
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new EmailNaoEncontradoException("Usuário não encontrado com o e-mail: " + email));
+    }
+
+    @Transactional(readOnly = true)
+    public Usuario findUsuarioById(Long id) { 
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado com o ID: " + id));
+    }
+
+    @Transactional(readOnly = true)
     public List<UsuarioComum> findAllUsuariosComuns() {
-        return usuarios.stream()
-                .filter(u -> u instanceof UsuarioComum)
-                .map(u -> (UsuarioComum) u)
-                .collect(Collectors.toList());
+        return usuarioRepository.findAllUsuariosComuns();
     }
 
+    @Transactional(readOnly = true)
     public List<Usuario> findAllUsuarios() {
-        if (usuarios.isEmpty()) {
-            UsuarioComum usuario1 = new UsuarioComum("Joana Silva", "joana@example.com", "senha123", "9999-9999");
-            usuario1.setId(idCounter++);
-            usuarios.add(usuario1);
-
-            UsuarioComum usuario2 = new UsuarioComum("Pedro Souza", "pedro@example.com", "outrasenha", "8888-8888");
-            usuario2.setId(idCounter++);
-            usuarios.add(usuario2);
-        }
-        return new ArrayList<>(usuarios);
+        return usuarioRepository.findAll();
     }
 }

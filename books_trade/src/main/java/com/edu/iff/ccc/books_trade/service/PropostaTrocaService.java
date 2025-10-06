@@ -1,93 +1,116 @@
 package com.edu.iff.ccc.books_trade.service;
 
+import com.edu.iff.ccc.books_trade.exceptions.LivroNaoEncontradoException;
+import com.edu.iff.ccc.books_trade.exceptions.PropostaNaoEncontradaException;
+import com.edu.iff.ccc.books_trade.exceptions.UsuarioNaoEncontradoException;
+import com.edu.iff.ccc.books_trade.exceptions.RegraDeNegocioException;
 import com.edu.iff.ccc.books_trade.entities.Livro;
 import com.edu.iff.ccc.books_trade.entities.PropostaTroca;
 import com.edu.iff.ccc.books_trade.entities.StatusProposta;
+import com.edu.iff.ccc.books_trade.entities.Usuario;
 import com.edu.iff.ccc.books_trade.entities.UsuarioComum;
+import com.edu.iff.ccc.books_trade.repository.LivroRepository;
+import com.edu.iff.ccc.books_trade.repository.PropostaTrocaRepository;
+import com.edu.iff.ccc.books_trade.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class PropostaTrocaService {
 
-    @Autowired
-    private LivroService livroService;
+    private final PropostaTrocaRepository propostaRepository;
+    private final LivroRepository livroRepository; 
+    private final UsuarioRepository usuarioRepository;
+    private final TrocaService trocaService;
 
     @Autowired
-    private UsuarioService usuarioService;
+    public PropostaTrocaService(PropostaTrocaRepository propostaRepository, LivroRepository livroRepository,
+                                UsuarioRepository usuarioRepository, TrocaService trocaService) {
+        this.propostaRepository = propostaRepository;
+        this.livroRepository = livroRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.trocaService = trocaService;
+    }
 
-    private final List<PropostaTroca> propostas = new ArrayList<>();
-    private long idCounter = 1;
-
+    @Transactional
     public PropostaTroca criarProposta(Long livroOfertadoId, Long livroDesejadoId, Long remetenteId, Long destinatarioId) {
-        Livro livroOfertado = livroService.findLivroById(livroOfertadoId);
-        Livro livroDesejado = livroService.findLivroById(livroDesejadoId);
-        
-        Optional<UsuarioComum> remetente = usuarioService.findUsuarioById(remetenteId)
-                .filter(u -> u instanceof UsuarioComum)
-                .map(u -> (UsuarioComum) u);
-        
-        Optional<UsuarioComum> destinatario = usuarioService.findUsuarioById(destinatarioId)
-                .filter(u -> u instanceof UsuarioComum)
-                .map(u -> (UsuarioComum) u);
-        
-        if (livroOfertado == null || livroDesejado == null || !remetente.isPresent() || !destinatario.isPresent()) {
-            throw new IllegalArgumentException("IDs de livro ou usuário inválidos.");
+        Livro livroOfertado = livroRepository.findById(livroOfertadoId)
+                .orElseThrow(() -> new LivroNaoEncontradoException("Livro ofertado não encontrado. ID: " + livroOfertadoId));
+        Livro livroDesejado = livroRepository.findById(livroDesejadoId)
+                .orElseThrow(() -> new LivroNaoEncontradoException("Livro desejado não encontrado. ID: " + livroDesejadoId));
+
+        Usuario remetente = usuarioRepository.findById(remetenteId)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário remetente não encontrado. ID: " + remetenteId));
+        Usuario destinatario = usuarioRepository.findById(destinatarioId)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário destinatário não encontrado. ID: " + destinatarioId));
+
+        if (!(remetente instanceof UsuarioComum) || !(destinatario instanceof UsuarioComum)) {
+            throw new ClassCastException("Remetente e Destinatário devem ser Usuários Comuns.");
         }
 
         PropostaTroca novaProposta = new PropostaTroca();
-        novaProposta.setId(idCounter++);
         novaProposta.setLivroOfertado(livroOfertado);
         novaProposta.setLivroDesejado(livroDesejado);
-        novaProposta.setRemetente(remetente.get());
-        novaProposta.setDestinatario(destinatario.get());
+        novaProposta.setRemetente((UsuarioComum) remetente);
+        novaProposta.setDestinatario((UsuarioComum) destinatario);
         novaProposta.setStatus(StatusProposta.PENDENTE);
         novaProposta.setDataEnvio(new Date());
 
-        propostas.add(novaProposta);
-        System.out.println("Proposta de troca criada com sucesso! ID: " + novaProposta.getId());
-        return novaProposta;
+        return propostaRepository.save(novaProposta);
     }
 
+    @Transactional(readOnly = true)
     public List<PropostaTroca> findPropostasByUsuarioId(Long usuarioId) {
-        return propostas.stream()
-                .filter(p -> p.getRemetente().getId().equals(usuarioId) || p.getDestinatario().getId().equals(usuarioId))
-                .collect(Collectors.toList());
+        return propostaRepository.findByRemetenteIdOrDestinatarioId(usuarioId, usuarioId);
     }
 
-    public Optional<PropostaTroca> findPropostaById(Long id) {
-        return propostas.stream()
-                .filter(p -> p.getId().equals(id))
-                .findFirst();
+    @Transactional(readOnly = true)
+    public PropostaTroca findPropostaById(Long id) { 
+        return propostaRepository.findById(id)
+            .orElseThrow(() -> new PropostaNaoEncontradaException("Proposta não encontrada com o ID: " + id));
     }
-    
+
+    @Transactional
     public PropostaTroca aceitarProposta(Long propostaId) {
-        Optional<PropostaTroca> propostaOpt = findPropostaById(propostaId);
-        if (propostaOpt.isPresent() && propostaOpt.get().getStatus() == StatusProposta.PENDENTE) {
-            PropostaTroca proposta = propostaOpt.get();
+        PropostaTroca proposta = this.findPropostaById(propostaId);
+
+        if (proposta.getStatus() == StatusProposta.PENDENTE) {
             proposta.setStatus(StatusProposta.ACEITA);
-            System.out.println("Proposta ID " + propostaId + " aceita.");
-            // Lógica para criar a Troca
-            // trocaService.criarTroca(proposta);
-            return proposta;
+            
+            trocaService.criarTroca(proposta);
+            
+            Livro livroOfertado = proposta.getLivroOfertado();
+            Livro livroDesejado = proposta.getLivroDesejado();
+            
+            livroOfertado.setDisponivel(false);
+            livroDesejado.setDisponivel(false);
+            
+            livroRepository.save(livroOfertado);
+            livroRepository.save(livroDesejado);
+            
+            return propostaRepository.save(proposta);
         }
-        return null;
+        throw new RegraDeNegocioException("Esta proposta não pode mais ser aceita.");
     }
 
+    @Transactional
     public PropostaTroca recusarProposta(Long propostaId) {
-        Optional<PropostaTroca> propostaOpt = findPropostaById(propostaId);
-        if (propostaOpt.isPresent() && propostaOpt.get().getStatus() == StatusProposta.PENDENTE) {
-            PropostaTroca proposta = propostaOpt.get();
+        PropostaTroca proposta = this.findPropostaById(propostaId);
+
+        if (proposta.getStatus() == StatusProposta.PENDENTE) {
             proposta.setStatus(StatusProposta.RECUSADA);
-            System.out.println("Proposta ID " + propostaId + " recusada.");
-            return proposta;
+            return propostaRepository.save(proposta);
         }
-        return null;
+        throw new RegraDeNegocioException("Esta proposta não pode mais ser recusada.");
     }
+
+    @Transactional(readOnly = true)
+    public List<PropostaTroca> findAll() {
+        return propostaRepository.findAll();
+    }
+
 }

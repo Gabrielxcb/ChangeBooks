@@ -11,22 +11,22 @@ public class AdminViewController {
 
     @GetMapping
     public String painelAdmin(Model model) {
-        return "admin"; // admin.html
+        return "admin";
     }
 
     @GetMapping("/usuarios")
     public String gerenciarUsuarios(Model model) {
-        return "admin_usuarios"; // admin_usuarios.html
+        return "admin_usuarios";
     }
 
     @GetMapping("/livros")
     public String gerenciarLivros(Model model) {
-        return "admin_livros"; // admin_livros.html
+        return "admin_livros";
     }
 
     @GetMapping("/trocas")
     public String gerenciarTrocas(Model model) {
-        return "admin_trocas"; // admin_trocas.html
+        return "admin_trocas";
     }
 }
 

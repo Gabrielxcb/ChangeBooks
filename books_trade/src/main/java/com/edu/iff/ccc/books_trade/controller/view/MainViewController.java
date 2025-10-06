@@ -10,7 +10,7 @@ public class MainViewController {
 
     @GetMapping
     public String getHomePage() {
-        return "index"; // página inicial do sistema
+        return "index";
     }
 }
 

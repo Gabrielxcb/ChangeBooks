@@ -2,14 +2,18 @@ package com.edu.iff.ccc.books_trade.entities;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @DiscriminatorValue("COMUM")
 public class UsuarioComum extends Usuario {
 
-    @OneToMany(mappedBy = "dono")
+    @OneToMany(mappedBy = "dono", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Livro> livrosCadastrados;
 
     @OneToMany(mappedBy = "remetente")
@@ -18,7 +22,6 @@ public class UsuarioComum extends Usuario {
     @OneToMany(mappedBy = "destinatario")
     private List<PropostaTroca> propostasRecebidas;
 
-    // Construtores
     public UsuarioComum() {
         super();
     }
@@ -27,7 +30,6 @@ public class UsuarioComum extends Usuario {
         super(nome, email, senha, telefone);
     }
 
-    // Getters e Setters
     public List<Livro> getLivrosCadastrados() {
         return livrosCadastrados;
     }
@@ -50,5 +52,13 @@ public class UsuarioComum extends Usuario {
 
     public void setPropostasRecebidas(List<PropostaTroca> propostasRecebidas) {
         this.propostasRecebidas = propostasRecebidas;
+    }
+
+    public void addLivro(Livro livro) {
+        if (this.livrosCadastrados == null) {
+            this.livrosCadastrados = new ArrayList<>();
+        }
+        this.livrosCadastrados.add(livro);
+        livro.setDono(this);
     }
 }
